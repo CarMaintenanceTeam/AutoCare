@@ -1,0 +1,31 @@
+.logo{
+    color: #E1AD01 !important; 
+    font-weight: bold !important;
+}
+
+.nav-text{
+    color:white !important;
+    font-size: 18px !important;
+    
+}
+.nav-link.active {
+  color: #E1AD01 !important; 
+  font-weight: bold;
+}
+
+.login-button {
+  border: 2px solid #E1AD01 !important;
+  color: white !important;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  font-size: 15px !important;
+  font-weight: bold !important;
+
+}
+
+/* Hover effect */
+.login-button:hover {
+  background-color: #E1AD01 !important; 
+  color: white;
+  border-color: #E1AD01 !important;
+}
