@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoCare.Domain.Common;
 
 namespace AutoCare.Domain.Events.VehicleEvents
 {
@@ -9,7 +10,7 @@ namespace AutoCare.Domain.Events.VehicleEvents
     /// Domain event raised when vehicle information is updated
     /// Triggers: Update notification (optional)
     /// </summary>
-    public class VehicleUpdatedEvent
+    public sealed record VehicleUpdatedEvent : IDomainEvent
     {
 
         /// <summary>
