@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Domain.Common;
+using AutoCare.Domain.Enums;
 
 namespace AutoCare.Domain.Entities
 {
@@ -129,11 +130,7 @@ namespace AutoCare.Domain.Entities
             {
                 Role = EmployeeRole.Owner;
                 MarkAsUpdated();
-
-                Continue
-
-
-}
+            }
             else
             {
                 throw new InvalidOperationException("Only managers can be promoted to owner");
