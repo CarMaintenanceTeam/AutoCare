@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AutoCare.Application.Common.Interfaces;
 using AutoCare.Domain.Entities;
+using AutoCare.Infrastructure.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoCare.Infrastructure.Data
@@ -12,7 +14,7 @@ namespace AutoCare.Infrastructure.Data
     /// Main database context for the AutoCare Platform
     /// Implements Unit of Work pattern
     /// </summary>
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         /// <summary>
         /// Constructor with options
@@ -37,13 +39,20 @@ namespace AutoCare.Infrastructure.Data
         /// <seealso cref="InvalidOperationException"/>
         /// <seealso cref="Microsoft.EntityFrameworkCore"/>
         /// <seealso cref="AutoCare.Infrastructure.Data"/>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        /// private readonly AuditableEntityInterceptor _auditableInterceptor;
+        private readonly AuditableEntityInterceptor _auditableInterceptor;
+        private readonly DomainEventDispatcherInterceptor _domainEventInterceptor;
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, AuditableEntityInterceptor auditableInterceptor, DomainEventDispatcherInterceptor domainEventInterceptor)
             : base(options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options), "DbContext options cannot be null.");
             }
+
+            _auditableInterceptor = auditableInterceptor;
+            _domainEventInterceptor = domainEventInterceptor;
         }
 
         #region DbSets
@@ -112,6 +121,13 @@ namespace AutoCare.Infrastructure.Data
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // Register interceptors for auditing and domain event dispatching
+            optionsBuilder.AddInterceptors(_auditableInterceptor, _domainEventInterceptor);
+            base.OnConfiguring(optionsBuilder);
         }
 
         #endregion
