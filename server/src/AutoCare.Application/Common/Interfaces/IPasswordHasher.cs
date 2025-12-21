@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AutoCare.Infrastructure.Identity
+namespace AutoCare.Application.Common.Interfaces
 {
     /// <summary>
     /// Service for hashing and verifying passwords using BCrypt

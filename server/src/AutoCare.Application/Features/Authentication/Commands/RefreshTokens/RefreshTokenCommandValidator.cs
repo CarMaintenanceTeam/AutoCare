@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace AutoCare.Application.Features.Authentication.Commands.RefreshToken
+namespace AutoCare.Application.Features.Authentication.Commands.RefreshTokens
 {
     /// <summary>
     /// Validator for RefreshTokenCommand

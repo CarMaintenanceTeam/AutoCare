@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoCare.Application.Common.Interfaces;
 using AutoCare.Application.Features.Authentication.Models;
 
-namespace AutoCare.Application.Features.Authentication.Commands.RefreshToken
+namespace AutoCare.Application.Features.Authentication.Commands.RefreshTokens
 {
     /// <summary>
     /// Command to refresh access token using refresh token

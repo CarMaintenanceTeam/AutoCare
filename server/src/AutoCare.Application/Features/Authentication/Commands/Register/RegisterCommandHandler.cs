@@ -6,8 +6,8 @@ using AutoCare.Application.Common.Exceptions;
 using AutoCare.Application.Common.Interfaces;
 using AutoCare.Application.Features.Authentication.Models;
 using AutoCare.Domain.Entities;
+
 using AutoCare.Domain.Enums;
-using AutoCare.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

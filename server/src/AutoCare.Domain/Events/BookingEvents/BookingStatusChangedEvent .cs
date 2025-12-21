@@ -11,7 +11,7 @@ namespace AutoCare.Domain.Events.BookingEvents
     /// Domain event raised when a booking status changes
     /// Triggers: Status history logging, Dashboard updates
     /// </summary>
-    public class BookingStatusChangedEvent : IDomainEvent
+    public sealed record BookingStatusChangedEvent : IDomainEvent
     {
         /// <summary>
         /// Gets the unique identifier for this event

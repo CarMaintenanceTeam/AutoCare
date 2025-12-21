@@ -94,7 +94,7 @@ namespace AutoCare.Application.Features.Vehicles.Commands.DeleteVehicle
             }
 
             // Check for active bookings
-            await ValidateNoActiveBookings(vehicle);
+            ValidateNoActiveBookings(vehicle);
 
             // Delete vehicle
             _context.Vehicles.Remove(vehicle);
@@ -111,7 +111,7 @@ namespace AutoCare.Application.Features.Vehicles.Commands.DeleteVehicle
         /// </summary>
         /// <param name="vehicle">Vehicle to validate</param>
         /// <exception cref="BusinessRuleValidationException">Thrown when active bookings exist</exception>
-        private async Task ValidateNoActiveBookings(Domain.Entities.Vehicle vehicle)
+        private void ValidateNoActiveBookings(Domain.Entities.Vehicle vehicle)
         {
             // Check for active bookings (Pending, Confirmed, InProgress)
             var activeBookings = vehicle.Bookings
@@ -120,7 +120,7 @@ namespace AutoCare.Application.Features.Vehicles.Commands.DeleteVehicle
                            b.Status == BookingStatus.InProgress)
                 .ToList();
 
-            if (activeBookings.Any())
+            if (activeBookings.Count != 0)
             {
                 _logger.LogWarning(
                     "Cannot delete vehicle {VehicleId} with {Count} active booking(s)",

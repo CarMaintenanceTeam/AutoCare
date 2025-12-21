@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AutoCare.Domain\AutoCare.Domain.csproj" />
     <ProjectReference Include="..\AutoCare.Contracts\AutoCare.Contracts.csproj" />
-    <ProjectReference Include="..\AutoCare.Infrastructure\AutoCare.Infrastructure.csproj" />
+    <!-- <ProjectReference Include="..\AutoCare.Infrastructure\AutoCare.Infrastructure.csproj" /> -->
   </ItemGroup>
 
   <ItemGroup>

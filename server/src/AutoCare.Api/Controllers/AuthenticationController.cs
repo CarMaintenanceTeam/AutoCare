@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Application.Common.Models;
 using AutoCare.Application.Features.Authentication.Commands.Login;
-using AutoCare.Application.Features.Authentication.Commands.RefreshToken;
+using AutoCare.Application.Features.Authentication.Commands.RefreshTokens;
 using AutoCare.Application.Features.Authentication.Commands.Register;
 using AutoCare.Application.Features.Authentication.Models;
 using MediatR;
