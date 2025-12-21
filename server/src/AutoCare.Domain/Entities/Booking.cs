@@ -121,6 +121,13 @@ namespace AutoCare.Domain.Entities
         /// </summary>
         public User? ConfirmedByUser { get; private set; }
 
+
+        /// <summary>
+        /// Gets the service center service configuration (for custom pricing)
+        /// NOTE: This is not mapped to database - use manual join when needed
+        /// </summary>
+        // public ServiceCenterService? ServiceCenterService { get; private set; }
+
         /// <summary>
         /// Gets the status change history for this booking
         /// </summary>

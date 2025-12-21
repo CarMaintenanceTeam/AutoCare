@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\AutoCare.Application\AutoCare.Application.csproj" />
+
     <ProjectReference Include="..\AutoCare.Domain\AutoCare.Domain.csproj" />
+    <ProjectReference Include="..\AutoCare.Application\AutoCare.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

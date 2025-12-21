@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Domain.Entities;
 
-namespace AutoCare.Infrastructure.Identity
+namespace AutoCare.Application.Common.Interfaces
 {
     /// <summary>
     /// Service for generating and validating JWT tokens

@@ -40,11 +40,11 @@ namespace AutoCare.Infrastructure.Data.Configurations
 
             #region Auditable Properties
             // 5- createdAt 
-            builder.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE");
+            builder.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
             // 6- updatedAt
             builder.Property(e => e.UpdatedAt);
             // 7- createdBy
-            builder.Property(e => e.CreatedBy).IsRequired();
+            builder.Property(e => e.CreatedBy);
             // 8- updatedBy
             builder.Property(e => e.UpdatedBy);
             #endregion

@@ -157,7 +157,15 @@ namespace AutoCare.Infrastructure.Data.Configurations
                 .WithOne(h => h.Booking)
                 .HasForeignKey(h => h.BookingId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // // New relationship for ServiceCenterService    
+            // builder.HasOne(b => b.ServiceCenterService)
+            // .WithMany()
+            // .HasForeignKey(b => new { b.ServiceCenterId, b.ServiceId })
+            // .HasPrincipalKey(scs => new { scs.ServiceCenterId, scs.ServiceId })
+            // .OnDelete(DeleteBehavior.Restrict);
 
+            // Ignore navigational property to ServiceCenterService
+            //builder.Ignore(b => b.ServiceCenterService);
             // Ignore DomainEvents
             builder.Ignore(b => b.DomainEvents);
         }
