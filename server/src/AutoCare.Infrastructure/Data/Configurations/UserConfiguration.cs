@@ -42,9 +42,8 @@ namespace AutoCare.Infrastructure.Data.Configurations
                 .HasMaxLength(20);
 
             builder.Property(u => u.UserType)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasConversion<string>(); // Store enum as string
+    .IsRequired()
+    .HasConversion<string>(); // Store enum as string
 
             builder.Property(u => u.IsActive)
                 .IsRequired()

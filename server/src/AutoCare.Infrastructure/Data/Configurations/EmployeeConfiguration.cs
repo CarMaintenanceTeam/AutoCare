@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Domain.Entities;
+using AutoCare.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -31,9 +32,10 @@ namespace AutoCare.Infrastructure.Data.Configurations
             // 2- ServiceCenterId
             builder.Property(e => e.ServiceCenterId).IsRequired();
             // 3- Role
-            builder.Property(e => e.Role).IsRequired()
-            .HasMaxLength(50)
-            .HasConversion<string>(); // store enum as string value
+            builder.Property(e => e.Role)
+    .IsRequired()
+    .HasConversion<string>()
+    .HasDefaultValue(EmployeeRole.Technician); // store enum as string value
             // 4- HireDate
             builder.Property(e => e.HireDate).IsRequired().HasColumnType("date");
             #endregion

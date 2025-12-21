@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Domain.Common;
 using AutoCare.Domain.Entities;
+using AutoCare.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -51,11 +52,11 @@ namespace AutoCare.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasColumnType("time");
 
+            // ✅ FIX: Status configuration
             builder.Property(b => b.Status)
                 .IsRequired()
-                .HasMaxLength(50)
                 .HasConversion<string>() // Store enum as string
-                .HasDefaultValue("Pending");
+                .HasDefaultValue(BookingStatus.Pending); // Use enum value, not string
 
             builder.Property(b => b.CustomerNotes)
                 .HasMaxLength(1000);
@@ -93,10 +94,8 @@ namespace AutoCare.Infrastructure.Data.Configurations
                 .IsUnique()
                 .HasDatabaseName("UK_Bookings_BookingNumber");
 
-            // CRITICAL: Prevent double booking at same time/center
+            // ✅ FIX: Simplified index - no filter
             builder.HasIndex(b => new { b.ServiceCenterId, b.BookingDate, b.BookingTime })
-                .IsUnique()
-                .HasFilter("[Status] NOT IN ('Cancelled', 'Completed')")
                 .HasDatabaseName("IDX_Bookings_NoDoubleBooking");
 
             // Performance Indexes
@@ -157,15 +156,7 @@ namespace AutoCare.Infrastructure.Data.Configurations
                 .WithOne(h => h.Booking)
                 .HasForeignKey(h => h.BookingId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // // New relationship for ServiceCenterService    
-            // builder.HasOne(b => b.ServiceCenterService)
-            // .WithMany()
-            // .HasForeignKey(b => new { b.ServiceCenterId, b.ServiceId })
-            // .HasPrincipalKey(scs => new { scs.ServiceCenterId, scs.ServiceId })
-            // .OnDelete(DeleteBehavior.Restrict);
 
-            // Ignore navigational property to ServiceCenterService
-            //builder.Ignore(b => b.ServiceCenterService);
             // Ignore DomainEvents
             builder.Ignore(b => b.DomainEvents);
         }
