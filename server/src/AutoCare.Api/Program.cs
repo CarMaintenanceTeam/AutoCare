@@ -1,9 +1,9 @@
 
 using AutoCare.Infrastructure;
 using AutoCare.Application;
+using AutoCare.Application.Common.Middleware;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Microsoft.Extensions.Options;
 
 // ============ CONFIGURE SERILOG ============
 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File(
@@ -55,7 +55,7 @@ try
             Contact = new OpenApiContact
             {
                 Name = "AutoCare Support",
-                Email = "support@autocare.com"
+                Email = "belalfayez@outlook.com"
             }
         });
 
@@ -122,12 +122,22 @@ try
     var app = builder.Build();
 
     // ============ CONFIGURE MIDDLEWARE PIPELINE ============
+    // Global Exception Handler (should be first)
+    app.UseGlobalExceptionHandler();
 
-    // Exception Handling (should be first)
+    // Serilog Request Logging
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
+    });
+
+    // Development Tools
     if (app.Environment.IsDevelopment())
     {
         // Detailed Exception Page
         app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
     else
     {
@@ -137,11 +147,7 @@ try
         app.UseHsts();
     }
 
-    // Serilog Request Logging
-    app.UseSerilogRequestLogging(options =>
-    {
-        options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
-    });
+
 
     // Swagger (Development & Staging)
     if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
