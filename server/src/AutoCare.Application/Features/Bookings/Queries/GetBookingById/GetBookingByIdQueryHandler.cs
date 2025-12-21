@@ -1,3 +1,4 @@
+using System.Threading.Tasks.Dataflow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,50 +48,55 @@ namespace AutoCare.Application.Features.Bookings.Queries.GetBookingById
                 userId);
 
             // Get booking with all related data
-            var booking = await _context.Bookings
-                .Include(b => b.Customer).ThenInclude(c => c.User)
-                .Include(b => b.Vehicle)
-                .Include(b => b.ServiceCenter)
-                .Include(b => b.Service)
-                .Include(b => b.ServiceCenterService)
-                .Where(b => b.Id == request.BookingId)
-                .Select(b => new BookingDto
-                {
-                    Id = b.Id,
-                    BookingNumber = b.BookingNumber,
-                    CustomerId = b.CustomerId,
-                    CustomerName = b.Customer.User.FullName,
-                    CustomerEmail = b.Customer.User.Email,
-                    CustomerPhone = b.Customer.User.PhoneNumber,
-                    VehicleId = b.VehicleId,
-                    VehicleInfo = $"{b.Vehicle.Brand} {b.Vehicle.Model} ({b.Vehicle.Year})",
-                    PlateNumber = b.Vehicle.PlateNumber,
-                    ServiceCenterId = b.ServiceCenterId,
-                    ServiceCenterName = b.ServiceCenter.NameEn,
-                    ServiceCenterAddress = b.ServiceCenter.AddressEn,
-                    ServiceCenterPhone = b.ServiceCenter.PhoneNumber,
-                    ServiceId = b.ServiceId,
-                    ServiceName = b.Service.NameEn,
-                    ServicePrice = b.ServiceCenterService != null && b.ServiceCenterService.CustomPrice.HasValue
-                    ? b.ServiceCenterService.CustomPrice.Value
-                    : b.Service.BasePrice,
-                    EstimatedDurationMinutes = b.Service.EstimatedDurationMinutes,
-                    BookingDate = b.BookingDate,
-                    BookingTime = b.BookingTime,
-                    Status = b.Status.ToString(),
-                    CustomerNotes = b.CustomerNotes,
-                    StaffNotes = b.StaffNotes,
-                    ConfirmedAt = b.ConfirmedAt,
-                    ConfirmedBy = b.ConfirmedBy,
-                    CompletedAt = b.CompletedAt,
-                    CancelledAt = b.CancelledAt,
-                    CancellationReason = b.CancellationReason,
-                    CanBeModified = b.CanBeModified(),
-                    CanBeCancelledByCustomer = b.CanBeCancelledByCustomer(),
-                    CreatedAt = b.CreatedAt,
-                    UpdatedAt = b.UpdatedAt
-                })
-                .FirstOrDefaultAsync(cancellationToken);
+            var booking = await (
+               from b in _context.Bookings
+                   .Include(b => b.Customer).ThenInclude(c => c.User)
+                   .Include(b => b.Vehicle)
+                   .Include(b => b.ServiceCenter)
+                   .Include(b => b.Service)
+               join scs in _context.ServiceCenterServices
+                   on new { b.ServiceCenterId, b.ServiceId }
+                   equals new { scs.ServiceCenterId, scs.ServiceId }
+                   into serviceCenterServices
+               from scs in serviceCenterServices.DefaultIfEmpty()
+               where b.Id == request.BookingId
+               select new BookingDto
+               {
+                   Id = b.Id,
+                   BookingNumber = b.BookingNumber,
+                   CustomerId = b.CustomerId,
+                   CustomerName = b.Customer.User.FullName,
+                   CustomerEmail = b.Customer.User.Email,
+                   CustomerPhone = b.Customer.User.PhoneNumber,
+                   VehicleId = b.VehicleId,
+                   VehicleInfo = $"{b.Vehicle.Brand} {b.Vehicle.Model} ({b.Vehicle.Year})",
+                   PlateNumber = b.Vehicle.PlateNumber,
+                   ServiceCenterId = b.ServiceCenterId,
+                   ServiceCenterName = b.ServiceCenter.NameEn,
+                   ServiceCenterAddress = b.ServiceCenter.AddressEn,
+                   ServiceCenterPhone = b.ServiceCenter.PhoneNumber,
+                   ServiceId = b.ServiceId,
+                   ServiceName = b.Service.NameEn,
+                   ServicePrice = scs != null && scs.CustomPrice.HasValue
+                       ? scs.CustomPrice.Value
+                       : b.Service.BasePrice,
+                   EstimatedDurationMinutes = b.Service.EstimatedDurationMinutes,
+                   BookingDate = b.BookingDate,
+                   BookingTime = b.BookingTime,
+                   Status = b.Status.ToString(),
+                   CustomerNotes = b.CustomerNotes,
+                   StaffNotes = b.StaffNotes,
+                   ConfirmedAt = b.ConfirmedAt,
+                   ConfirmedBy = b.ConfirmedBy,
+                   CompletedAt = b.CompletedAt,
+                   CancelledAt = b.CancelledAt,
+                   CancellationReason = b.CancellationReason,
+                   CanBeModified = b.CanBeModified(),
+                   CanBeCancelledByCustomer = b.CanBeCancelledByCustomer(),
+                   CreatedAt = b.CreatedAt,
+                   UpdatedAt = b.UpdatedAt
+               }
+           ).FirstOrDefaultAsync(cancellationToken);
 
             if (booking == null)
             {

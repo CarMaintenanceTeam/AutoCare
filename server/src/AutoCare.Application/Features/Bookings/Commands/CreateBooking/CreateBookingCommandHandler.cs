@@ -20,24 +20,16 @@ namespace AutoCare.Application.Features.Bookings.Commands.CreateBooking
     /// - Business Logic Protection: Enforces all booking rules
     /// - Transaction Safety: All validations before database changes
     /// </summary>
-    public sealed class CreateBookingCommandHandler : ICommandHandler<CreateBookingCommand, BookingDto>
+    public sealed class CreateBookingCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUserService,
+        IEmailService emailService,
+        ILogger<CreateBookingCommandHandler> logger) : ICommandHandler<CreateBookingCommand, BookingDto>
     {
-        private readonly IApplicationDbContext _context;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IEmailService _emailService;
-        private readonly ILogger<CreateBookingCommandHandler> _logger;
-
-        public CreateBookingCommandHandler(
-            IApplicationDbContext context,
-            ICurrentUserService currentUserService,
-            IEmailService emailService,
-            ILogger<CreateBookingCommandHandler> logger)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        private readonly IApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+        private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        private readonly ILogger<CreateBookingCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         /// <summary>
         /// Handles the create booking command
@@ -258,6 +250,9 @@ namespace AutoCare.Application.Features.Bookings.Commands.CreateBooking
                 .Include(c => c.User)
                 .FirstAsync(c => c.Id == booking.CustomerId);
 
+            var effectivePrice = serviceCenterService.CustomPrice ?? serviceCenterService.Service.BasePrice;
+
+
             return new BookingDto
             {
                 Id = booking.Id,
@@ -275,7 +270,7 @@ namespace AutoCare.Application.Features.Bookings.Commands.CreateBooking
                 ServiceCenterPhone = serviceCenter.PhoneNumber,
                 ServiceId = serviceCenterService.ServiceId,
                 ServiceName = serviceCenterService.Service.NameEn,
-                ServicePrice = serviceCenterService.GetEffectivePrice(),
+                ServicePrice = effectivePrice,
                 EstimatedDurationMinutes = serviceCenterService.Service.EstimatedDurationMinutes,
                 BookingDate = booking.BookingDate,
                 BookingTime = booking.BookingTime,

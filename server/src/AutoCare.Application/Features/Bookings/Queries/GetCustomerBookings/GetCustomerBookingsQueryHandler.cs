@@ -75,42 +75,43 @@ namespace AutoCare.Application.Features.Bookings.Queries.GetCustomerBookings
             //     CreatedAt = b.CreatedAt
             // });
             // Alternative approach to avoid subquery in projection (Left Join) (... still not ideal)
-            // var projectedQuery = from b in query
-            //                      join scs in _context.ServiceCenterServices
-            //                      on new { b.ServiceCenterId, b.ServiceId } equals new { scs.ServiceCenterId, scs.ServiceId }
-            //                      into ServiceCenterServices
-            //                      from scs in ServiceCenterServices.DefaultIfEmpty()
-            //                      select new BookingListDto
-            //                      {
-            //                          Id = b.Id,
-            //                          BookingNumber = b.BookingNumber,
-            //                          VehicleInfo = $"{b.Vehicle.Brand} {b.Vehicle.Model} ({b.Vehicle.Year})",
-            //                          ServiceCenterName = b.ServiceCenter.NameEn,
-            //                          ServiceName = b.Service.NameEn,
-            //                          BookingDate = b.BookingDate,
-            //                          BookingTime = b.BookingTime,
-            //                          Status = b.Status.ToString(),
-            //                          ServicePrice = scs != null && scs.CustomPrice.HasValue
-            //                          ? (scs.CustomPrice ?? b.Service.BasePrice)
-            //                          : b.Service.BasePrice,
-            //                          CreatedAt = b.CreatedAt
-            //                      };
+            var projectedQuery = from b in query
+                                 join scs in _context.ServiceCenterServices
+                                 on new { b.ServiceCenterId, b.ServiceId }
+                                 equals new { scs.ServiceCenterId, scs.ServiceId }
+                                 into ServiceCenterServices
+                                 from scs in ServiceCenterServices.DefaultIfEmpty()
+                                 select new BookingListDto
+                                 {
+                                     Id = b.Id,
+                                     BookingNumber = b.BookingNumber,
+                                     VehicleInfo = $"{b.Vehicle.Brand} {b.Vehicle.Model} ({b.Vehicle.Year})",
+                                     ServiceCenterName = b.ServiceCenter.NameEn,
+                                     ServiceName = b.Service.NameEn,
+                                     BookingDate = b.BookingDate,
+                                     BookingTime = b.BookingTime,
+                                     Status = b.Status.ToString(),
+                                     ServicePrice = scs != null && scs.CustomPrice.HasValue
+                                     ? (scs.CustomPrice ?? b.Service.BasePrice)
+                                     : b.Service.BasePrice,
+                                     CreatedAt = b.CreatedAt
+                                 };
             // Final approach using navigation property to avoid subquery in projection
-            var projectedQuery = query.Select(b => new BookingListDto
-            {
-                Id = b.Id,
-                BookingNumber = b.BookingNumber,
-                VehicleInfo = $"{b.Vehicle.Brand} {b.Vehicle.Model} ({b.Vehicle.Year})",
-                ServiceCenterName = b.ServiceCenter.NameEn,
-                ServiceName = b.Service.NameEn,
-                BookingDate = b.BookingDate,
-                BookingTime = b.BookingTime,
-                Status = b.Status.ToString(),
-                ServicePrice = b.ServiceCenterService != null && b.ServiceCenterService.CustomPrice.HasValue
-                    ? (b.ServiceCenterService.CustomPrice ?? b.Service.BasePrice)
-                    : b.Service.BasePrice,
-                CreatedAt = b.CreatedAt
-            });
+            // var projectedQuery = query.Select(b => new BookingListDto
+            // {
+            //     Id = b.Id,
+            //     BookingNumber = b.BookingNumber,
+            //     VehicleInfo = $"{b.Vehicle.Brand} {b.Vehicle.Model} ({b.Vehicle.Year})",
+            //     ServiceCenterName = b.ServiceCenter.NameEn,
+            //     ServiceName = b.Service.NameEn,
+            //     BookingDate = b.BookingDate,
+            //     BookingTime = b.BookingTime,
+            //     Status = b.Status.ToString(),
+            //     ServicePrice = b.ServiceCenterService != null && b.ServiceCenterService.CustomPrice.HasValue
+            //         ? (b.ServiceCenterService.CustomPrice ?? b.Service.BasePrice)
+            //         : b.Service.BasePrice,
+            //     CreatedAt = b.CreatedAt
+            // });
 
             // Execute with pagination
             var pagination = new PaginationParams(request.PageNumber, request.PageSize);
@@ -132,7 +133,6 @@ namespace AutoCare.Application.Features.Bookings.Queries.GetCustomerBookings
                 .Include(b => b.Vehicle)
                 .Include(b => b.ServiceCenter)
                 .Include(b => b.Service)
-                .Include(b => b.ServiceCenterService)
                 .Where(b => b.CustomerId == customerId);
 
             // Filter by status
