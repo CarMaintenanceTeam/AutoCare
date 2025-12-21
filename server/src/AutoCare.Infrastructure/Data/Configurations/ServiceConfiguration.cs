@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Domain.Entities;
+using AutoCare.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -47,9 +48,9 @@ namespace AutoCare.Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.Property(s => s.ServiceType)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasConversion<string>(); // Store enum as string
+    .IsRequired()
+    .HasConversion<string>()
+    .HasDefaultValue(ServiceType.Maintenance); // Store enum as string
 
             builder.Property(s => s.IsActive)
                 .IsRequired()
