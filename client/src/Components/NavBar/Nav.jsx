@@ -1,8 +1,17 @@
 import React from "react";
 import './Nav.css';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/home');
+  };
+
   return (
     <nav className="navbar nav-transparent mt-2 navbar-expand-lg">
       <div className="container">
@@ -32,18 +41,50 @@ export default function Navbar() {
               <NavLink className="nav-link nav-text" to="/about">About</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link nav-text" to="/services">Services</NavLink>
+              <NavLink className="nav-link nav-text" to="/service-centers">Service Centers</NavLink>
             </li>
             <li className="nav-item">
               <NavLink className="nav-link nav-text" to="/contact">Contact</NavLink>
             </li>
+            {isAuthenticated && (
+              <>
+                <li className="nav-item">
+                  <NavLink className="nav-link nav-text" to="/dashboard">Dashboard</NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link nav-text" to="/vehicles">My Vehicles</NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link nav-text" to="/bookings">My Bookings</NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </div>
 
-   
-        <button className=" login-button btn btn-outline-primary ms-auto" type="submit">
-          Login
-        </button>
+        {isAuthenticated ? (
+          <div className="dropdown ms-auto">
+            <button 
+              className="btn btn-outline-primary dropdown-toggle" 
+              type="button" 
+              id="userDropdown" 
+              data-bs-toggle="dropdown" 
+              aria-expanded="false"
+            >
+              <i className="fas fa-user me-2"></i>
+              {user?.fullName}
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><NavLink className="dropdown-item" to="/dashboard">Dashboard</NavLink></li>
+              <li><hr className="dropdown-divider" /></li>
+              <li><button className="dropdown-item" onClick={handleLogout}>Logout</button></li>
+            </ul>
+          </div>
+        ) : (
+          <NavLink className="login-button btn btn-outline-primary ms-auto" to="/login">
+            Login
+          </NavLink>
+        )}
       </div>
     </nav>
   );
