@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoCare.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 
 namespace AutoCare.Application.Common.Interfaces
@@ -25,6 +26,8 @@ namespace AutoCare.Application.Common.Interfaces
         DbSet<Booking> Bookings { get; }
         DbSet<BookingStatusHistory> BookingStatusHistory { get; }
         DbSet<RefreshToken> RefreshTokens { get; }
+
+        DatabaseFacade Database { get; }
 
         /// <summary>
         /// Saves all changes made in this context to the database
