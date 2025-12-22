@@ -43,6 +43,8 @@ namespace AutoCare.Infrastructure.Data
         private readonly AuditableEntityInterceptor _auditableInterceptor;
         private readonly DomainEventDispatcherInterceptor _domainEventInterceptor;
 
+        private bool _dispatchDomainEvents = true;
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, AuditableEntityInterceptor auditableInterceptor, DomainEventDispatcherInterceptor domainEventInterceptor)
             : base(options)
         {
@@ -55,6 +57,17 @@ namespace AutoCare.Infrastructure.Data
             _domainEventInterceptor = domainEventInterceptor;
         }
 
+        public void DisableDomainEventDispatcher()
+        {
+            _dispatchDomainEvents = false;
+        }
+
+        public void EnableDomainEventDispatcher()
+        {
+            _dispatchDomainEvents = true;
+        }
+
+        public bool IsDomainEventDispatcherEnabled => _dispatchDomainEvents;
         #region DbSets
 
         /// <summary>

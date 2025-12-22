@@ -4,6 +4,9 @@ using AutoCare.Application;
 using AutoCare.Application.Common.Middleware;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using AutoCare.Application.Common.Interfaces;
+using AutoCare.Infrastructure.Data.Seed;
+using Microsoft.EntityFrameworkCore;
 
 // ============ CONFIGURE SERILOG ============
 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File(
@@ -150,6 +153,31 @@ try
     }))
     .WithName("HealthCheck")
     .WithOpenApi();
+
+    // Apply migrations and seed data
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<IApplicationDbContext>();
+            var passwordHasher = services.GetRequiredService<IPasswordHasher>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
+            // Apply pending migrations
+            await context.Database.MigrateAsync();
+
+            // Seed initial data
+            await DataSeeder.SeedAllAsync(context, passwordHasher, logger);
+            Log.Information("Database seeded successfully");
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred while seeding the database.");
+            throw;
+        }
+    }
 
     Log.Information("AutoCare Platform API started successfully");
     app.Run();
