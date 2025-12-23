@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Home.css";
 
 import ServicesCard from "../ServicesPage/ServicesCard";
-import { NavLink,Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 export default function Home() {
   const services = [
     { id: 1, icon: "🛢️", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
@@ -24,7 +24,9 @@ export default function Home() {
               Keep your vehicle running smoothly with our expert maintenance services. <br />
               Quick, reliable, and affordable car care you can trust.
             </p>
-            <button className="btn header-button mt-4">Book Appointment</button>
+            <Link to="/service-centers" className="btn header-button mt-4">
+              Book Appointment
+            </Link>
           </div>
         </div>
       </header>
@@ -100,9 +102,10 @@ Drive in confidence — because with AutoCare Pro, your car is always in good ha
 
     </div>
     <div className='col-md-5 d-flex flex-column justify-content-center'>
-      <img src="/images/2.jpg" 
-      className='about-img  '
-      
+      <img
+        src="/images/2.jpg"
+        className='about-img'
+        alt='AutoCare workshop'
       />
     </div>
   

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
+  const isAdminLike = user?.userType === 'Admin' || user?.userType === 'Employee';
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -41,7 +42,16 @@ export default function Navbar() {
               <NavLink className="nav-link nav-text" to="/about">About</NavLink>
             </li>
             <li className="nav-item">
+              <NavLink className="nav-link nav-text" to="/services">Services</NavLink>
+            </li>
+            <li className="nav-item">
               <NavLink className="nav-link nav-text" to="/service-centers">Service Centers</NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink className="nav-link nav-text" to="/nearby">Nearby</NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink className="nav-link nav-text" to="/contact">Contact</NavLink>
             </li>
             <li className="nav-item">
               <NavLink className="nav-link nav-text" to="/contact">Contact</NavLink>
@@ -57,6 +67,11 @@ export default function Navbar() {
                 <li className="nav-item">
                   <NavLink className="nav-link nav-text" to="/bookings">My Bookings</NavLink>
                 </li>
+                {isAdminLike && (
+                  <li className="nav-item">
+                    <NavLink className="nav-link nav-text" to="/admin">Admin</NavLink>
+                  </li>
+                )}
               </>
             )}
           </ul>

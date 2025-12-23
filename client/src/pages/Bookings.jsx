@@ -1,24 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { bookingService } from '../api/bookingService';
-import Loading from '../components/common/Loading';
-import ErrorMessage from '../components/common/ErrorMessage';
+import Loading from '../Components/common/Loading';
+import ErrorMessage from '../Components/common/ErrorMessage';
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cancellingId, setCancellingId] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 10;
+  const [pagination, setPagination] = useState(null);
 
   useEffect(() => {
-    fetchBookings();
+    fetchBookings(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchBookings = async () => {
+  const fetchBookings = async (page = pageNumber) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await bookingService.getMyBookings();
+      const response = await bookingService.getMyBookings({
+        pageNumber: page,
+        pageSize,
+        sortBy: 'Date',
+        sortOrder: 'Desc',
+      });
       setBookings(response.data || []);
+      setPagination(response.pagination || null);
+      setPageNumber(page);
     } catch (err) {
       setError(err.response?.data?.errors?.[0] || 'Failed to load bookings');
     } finally {
@@ -33,7 +44,7 @@ const Bookings = () => {
     try {
       setCancellingId(id);
       await bookingService.cancelBooking(id, reason);
-      await fetchBookings();
+      await fetchBookings(pageNumber);
     } catch (err) {
       setError(err.response?.data?.errors?.[0] || 'Failed to cancel booking');
     } finally {
@@ -50,6 +61,12 @@ const Bookings = () => {
       Cancelled: 'bg-danger',
     };
     return statusClasses[status] || 'bg-secondary';
+  };
+
+  const handlePageChange = (newPage) => {
+    if (!pagination) return;
+    if (newPage < 1 || newPage > pagination.totalPages) return;
+    fetchBookings(newPage);
   };
 
   if (loading) return <Loading message="Loading bookings..." />;
@@ -71,11 +88,12 @@ const Bookings = () => {
           No bookings yet. Browse service centers to make your first appointment!
         </div>
       ) : (
-        <div className="row g-4">
-          {bookings.map((booking) => (
-            <div key={booking.bookingId} className="col-lg-6">
-              <div className="card shadow-sm h-100">
-                <div className="card-body">
+        <>
+          <div className="row g-4">
+            {bookings.map((booking) => (
+              <div key={booking.id} className="col-lg-6">
+                <div className="card shadow-sm h-100">
+                  <div className="card-body">
                   <div className="d-flex justify-content-between align-items-start mb-3">
                     <h5 className="card-title mb-0">
                       Booking #{booking.bookingNumber}
@@ -88,10 +106,6 @@ const Bookings = () => {
                   <div className="mb-3">
                     <h6 className="text-muted mb-2">Service Center</h6>
                     <p className="mb-1">{booking.serviceCenterName}</p>
-                    <p className="text-muted small mb-0">
-                      <i className="fas fa-map-marker-alt me-1"></i>
-                      {booking.serviceCenterAddress}
-                    </p>
                   </div>
 
                   <div className="row g-3 mb-3">
@@ -101,11 +115,7 @@ const Bookings = () => {
                     </div>
                     <div className="col-6">
                       <h6 className="text-muted mb-1">Vehicle</h6>
-                      <p className="mb-0">
-                        {booking.vehicleBrand} {booking.vehicleModel}
-                        <br />
-                        <span className="text-muted small">{booking.vehiclePlateNumber}</span>
-                      </p>
+                      <p className="mb-0">{booking.vehicleInfo}</p>
                     </div>
                   </div>
 
@@ -126,20 +136,13 @@ const Bookings = () => {
                     </p>
                   </div>
 
-                  {booking.customerNotes && (
-                    <div className="mb-3">
-                      <h6 className="text-muted mb-1">Notes</h6>
-                      <p className="mb-0 small">{booking.customerNotes}</p>
-                    </div>
-                  )}
-
                   {booking.status === 'Pending' && (
                     <button
                       className="btn btn-outline-danger btn-sm"
-                      onClick={() => handleCancel(booking.bookingId)}
-                      disabled={cancellingId === booking.bookingId}
+                      onClick={() => handleCancel(booking.id)}
+                      disabled={cancellingId === booking.id}
                     >
-                      {cancellingId === booking.bookingId ? (
+                      {cancellingId === booking.id ? (
                         <>
                           <span className="spinner-border spinner-border-sm me-2"></span>
                           Cancelling...
@@ -153,12 +156,6 @@ const Bookings = () => {
                     </button>
                   )}
 
-                  {booking.status === 'Cancelled' && booking.cancellationReason && (
-                    <div className="alert alert-danger mb-0 mt-2 small">
-                      <strong>Cancelled:</strong> {booking.cancellationReason}
-                    </div>
-                  )}
-
                   <div className="mt-3 pt-3 border-top">
                     <small className="text-muted">
                       <i className="fas fa-info-circle me-1"></i>
@@ -170,6 +167,34 @@ const Bookings = () => {
             </div>
           ))}
         </div>
+
+          {pagination && (
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <span className="text-muted">
+                Page {pagination.pageNumber} of {pagination.totalPages} ({pagination.totalCount}{' '}
+                bookings)
+              </span>
+              <div>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm me-2"
+                  onClick={() => handlePageChange(pagination.pageNumber - 1)}
+                  disabled={!pagination.hasPreviousPage}
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={() => handlePageChange(pagination.pageNumber + 1)}
+                  disabled={!pagination.hasNextPage}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

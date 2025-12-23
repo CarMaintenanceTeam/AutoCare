@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { vehicleService } from '../api/vehicleService';
-import Loading from '../components/common/Loading';
-import ErrorMessage from '../components/common/ErrorMessage';
+import Loading from '../Components/common/Loading';
+import ErrorMessage from '../Components/common/ErrorMessage';
 
 const Vehicles = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -21,6 +21,7 @@ const Vehicles = () => {
 
   useEffect(() => {
     fetchVehicles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchVehicles = async () => {
@@ -43,7 +44,7 @@ const Vehicles = () => {
 
     try {
       if (editingVehicle) {
-        await vehicleService.updateVehicle(editingVehicle.vehicleId, formData);
+        await vehicleService.updateVehicle(editingVehicle.id, formData);
       } else {
         await vehicleService.createVehicle(formData);
       }
@@ -75,7 +76,7 @@ const Vehicles = () => {
         model: vehicle.model,
         year: vehicle.year,
         plateNumber: vehicle.plateNumber,
-        vin: vehicle.vin || '',
+        vin: '', // VIN is not exposed in list DTO; keep empty for updates
         color: vehicle.color || '',
       });
     } else {
@@ -128,7 +129,7 @@ const Vehicles = () => {
           </div>
         ) : (
           vehicles.map((vehicle) => (
-            <div key={vehicle.vehicleId} className="col-md-6 col-lg-4">
+            <div key={vehicle.id} className="col-md-6 col-lg-4">
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-start mb-3">
@@ -144,7 +145,7 @@ const Vehicles = () => {
                       </button>
                       <button
                         className="btn btn-outline-danger"
-                        onClick={() => handleDelete(vehicle.vehicleId)}
+                        onClick={() => handleDelete(vehicle.id)}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
@@ -162,11 +163,6 @@ const Vehicles = () => {
                     <p className="text-muted mb-2">
                       <i className="fas fa-palette me-2"></i>
                       <strong>Color:</strong> {vehicle.color}
-                    </p>
-                  )}
-                  {vehicle.vin && (
-                    <p className="text-muted mb-0 small">
-                      <strong>VIN:</strong> {vehicle.vin}
                     </p>
                   )}
                 </div>
@@ -218,7 +214,7 @@ const Vehicles = () => {
                         type="number"
                         className="form-control"
                         value={formData.year}
-                        onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value, 10) || new Date().getFullYear() })}
                         min="1900"
                         max={new Date().getFullYear() + 1}
                         required
@@ -243,15 +239,17 @@ const Vehicles = () => {
                         onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                       />
                     </div>
-                    <div className="col-md-6">
-                      <label className="form-label">VIN (Optional)</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={formData.vin}
-                        onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
-                      />
-                    </div>
+                    {!editingVehicle && (
+                      <div className="col-md-6">
+                        <label className="form-label">VIN (Optional)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={formData.vin}
+                          onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="modal-footer">

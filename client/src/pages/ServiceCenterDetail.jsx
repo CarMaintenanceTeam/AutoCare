@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { serviceCenterService } from '../api/serviceCenterService';
 import { serviceService } from '../api/serviceService';
 import { vehicleService } from '../api/vehicleService';
 import { bookingService } from '../api/bookingService';
-import Loading from '../components/common/Loading';
-import ErrorMessage from '../components/common/ErrorMessage';
+import Loading from '../Components/common/Loading';
+import ErrorMessage from '../Components/common/ErrorMessage';
 
 const ServiceCenterDetail = () => {
   const { id } = useParams();
@@ -25,11 +25,7 @@ const ServiceCenterDetail = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,7 +44,11 @@ const ServiceCenterDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();

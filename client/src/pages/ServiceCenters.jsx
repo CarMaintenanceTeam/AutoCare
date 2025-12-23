@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { serviceCenterService } from '../api/serviceCenterService';
-import Loading from '../components/common/Loading';
-import ErrorMessage from '../components/common/ErrorMessage';
+import Loading from '../Components/common/Loading';
+import ErrorMessage from '../Components/common/ErrorMessage';
 
 const ServiceCenters = () => {
   const [serviceCenters, setServiceCenters] = useState([]);
@@ -12,17 +12,38 @@ const ServiceCenters = () => {
     city: '',
     searchTerm: '',
   });
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 9;
+  const [pagination, setPagination] = useState(null);
 
   useEffect(() => {
-    fetchServiceCenters();
+    fetchServiceCenters(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchServiceCenters = async () => {
+  const fetchServiceCenters = async (page = pageNumber) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await serviceCenterService.getAllServiceCenters(filters);
-      setServiceCenters(response.data || []);
+      const response = await serviceCenterService.getAllServiceCenters({
+        city: filters.city || undefined,
+        pageNumber: page,
+        pageSize,
+      });
+
+      let centers = response.data || [];
+
+      // Client-side search by name since backend doesn't support searchTerm
+      if (filters.searchTerm) {
+        const term = filters.searchTerm.toLowerCase();
+        centers = centers.filter((c) =>
+          c.nameEn?.toLowerCase().includes(term) || c.nameAr?.toLowerCase().includes(term)
+        );
+      }
+
+      setServiceCenters(centers);
+      setPagination(response.pagination || null);
+      setPageNumber(page);
     } catch (err) {
       setError(err.response?.data?.errors?.[0] || 'Failed to load service centers');
     } finally {
@@ -32,7 +53,13 @@ const ServiceCenters = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchServiceCenters();
+    fetchServiceCenters(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (!pagination) return;
+    if (newPage < 1 || newPage > pagination.totalPages) return;
+    fetchServiceCenters(newPage);
   };
 
   if (loading) return <Loading message="Loading service centers..." />;
@@ -96,31 +123,41 @@ const ServiceCenters = () => {
           </div>
         ) : (
           serviceCenters.map((center) => (
-            <div key={center.serviceCenterId} className="col-md-6 col-lg-4">
+            <div key={center.id} className="col-md-6 col-lg-4">
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title">{center.nameEn}</h5>
-                  <p className="card-text text-muted small">
-                    <i className="fas fa-map-marker-alt me-2"></i>
-                    {center.addressEn}
-                  </p>
-                  <p className="card-text text-muted small">
+                  <p className="card-text text-muted small mb-1">
                     <i className="fas fa-city me-2"></i>
                     {center.city}
                   </p>
-                  <p className="card-text text-muted small">
+                  <p className="card-text text-muted small mb-1">
                     <i className="fas fa-phone me-2"></i>
                     {center.phoneNumber}
                   </p>
-                  <p className="card-text text-muted small">
-                    <i className="fas fa-clock me-2"></i>
-                    {center.workingHours}
-                  </p>
+                  {center.workingHours && (
+                    <p className="card-text text-muted small mb-1">
+                      <i className="fas fa-clock me-2"></i>
+                      {center.workingHours}
+                    </p>
+                  )}
+                  {center.servicesCount !== undefined && (
+                    <p className="card-text text-muted small mb-1">
+                      <i className="fas fa-wrench me-2"></i>
+                      {center.servicesCount} services available
+                    </p>
+                  )}
+                  {center.distance != null && (
+                    <p className="card-text text-muted small mb-1">
+                      <i className="fas fa-route me-2"></i>
+                      {center.distance.toFixed(1)} km away
+                    </p>
+                  )}
                   <Link
-                    to={`/service-centers/${center.serviceCenterId}`}
-                    className="btn btn-primary btn-sm mt-2"
+                    to={`/service-centers/${center.id}`}
+                    className="btn btn-primary btn-sm mt-3"
                   >
-                    View Services & Book
+                    View Services &amp; Book
                   </Link>
                 </div>
               </div>
@@ -128,6 +165,33 @@ const ServiceCenters = () => {
           ))
         )}
       </div>
+
+      {pagination && (
+        <div className="d-flex justify-content-between align-items-center mt-4">
+          <span className="text-muted">
+            Page {pagination.pageNumber} of {pagination.totalPages} ({pagination.totalCount}{' '}
+            centers)
+          </span>
+          <div>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm me-2"
+              onClick={() => handlePageChange(pagination.pageNumber - 1)}
+              disabled={!pagination.hasPreviousPage}
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => handlePageChange(pagination.pageNumber + 1)}
+              disabled={!pagination.hasNextPage}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
