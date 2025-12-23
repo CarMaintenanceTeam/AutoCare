@@ -1,23 +1,28 @@
 .service-card{
-       background-color: rgba(128, 128, 128, 0.3);
-      
-        border: none;
-        border-radius: 10px;
-      width: 350px;
-    height: 250px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+  background-color: rgba(128, 128, 128, 0.3);
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .title{
-    color: #E1AD01;
-    font-weight: light !important;
-    font-size: 18px;
+  color: #E1AD01;
+  font-weight: 500;
+  font-size: 18px;
 }
 
 .details-button{
-    background-color: #E1AD01 !important;
-    color: white !important;
+  background-color: #E1AD01 !important;
+  color: #fff !important;
+  border-radius: 999px;
+}
 
+@media (max-width: 576px) {
+  .service-card{
+    min-height: 200px;
+  }
 }

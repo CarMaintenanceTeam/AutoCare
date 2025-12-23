@@ -1,18 +1,45 @@
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 
 import ServicesCard from "../ServicesPage/ServicesCard";
 import { Link } from 'react-router-dom';
+import { serviceService } from '../../api/serviceService';
+import Loading from '../common/Loading';
+import ErrorMessage from '../common/ErrorMessage';
+
 export default function Home() {
-  const services = [
-    { id: 1, icon: "🛢️", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
-    { id: 2, icon: "🔧", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
-     { id: 3, icon: "🔧", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
-      { id: 4, icon: "🔧", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
-       { id: 5, icon: "🔧", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
-        { id: 6, icon: "🔧", title: "Oil Change", description: "Regular oil changes to keep your engine running smoothly and extend its lifespan." },
-  ];
+  const [services, setServices] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesError, setServicesError] = useState(null);
+
+  useEffect(() => {
+    const fetchFeaturedServices = async () => {
+      try {
+        setServicesLoading(true);
+        setServicesError(null);
+        const response = await serviceService.getAllServices({
+          isActive: true,
+          pageNumber: 1,
+          pageSize: 6,
+          sortBy: 'Name',
+          sortOrder: 'Asc',
+        });
+        setServices(response.data || []);
+      } catch (err) {
+        setServicesError(err.response?.data?.errors?.[0] || 'Failed to load services');
+      } finally {
+        setServicesLoading(false);
+      }
+    };
+
+    fetchFeaturedServices();
+  }, []);
+
+  const getServiceIcon = (serviceType) => {
+    if (serviceType === 'Maintenance') return '🔧';
+    if (serviceType === 'SpareParts') return '🛞';
+    return '🚗';
+  };
 
   return (
     <>
@@ -42,23 +69,32 @@ export default function Home() {
   </div>
 
   <div className="container mt-4">
-    <div className="row g-4">
-      {services.map((service) => (
-        <div key={service.id} className="col-md-4 d-flex">
-          <ServicesCard
-            icon={service.icon}
-            title={service.title}
-            description={service.description}
-          />
+    {servicesLoading && (
+      <Loading message="Loading featured services..." />
+    )}
 
-        
-        </div>
-      ))}
-    </div>
+    {servicesError && !servicesLoading && (
+      <ErrorMessage message={servicesError} onRetry={null} />
+    )}
+
+    {!servicesLoading && !servicesError && (
+      <div className="row g-4">
+        {services.slice(0, 6).map((service) => (
+          <div key={service.id} className="col-sm-6 col-lg-4 d-flex">
+            <ServicesCard
+              icon={getServiceIcon(service.serviceType)}
+              title={service.nameEn}
+              description={service.descriptionEn || 'Professional car maintenance service.'}
+              to={`/services/${service.id}`}
+            />
+          </div>
+        ))}
+      </div>
+    )}
   </div>
-<Link className='text-decoration-none' to='/services'>
-<h2 className= 'all-services text-end mt-3 me-5'>All Services >></h2>
-</Link>
+  <Link className='text-decoration-none' to='/services'>
+    <h2 className='all-services text-end mt-3 me-5'>All Services &gt;&gt;</h2>
+  </Link>
 </section>
 
 
