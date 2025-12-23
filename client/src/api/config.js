@@ -1,18 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const API_BASE_URL = 'https://localhost:7146/api';
+export const API_BASE_URL = "http://localhost:5088/api";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,25 +34,29 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = localStorage.getItem("refreshToken");
         if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
-            refreshToken,
-          });
+          const response = await axios.post(
+            `${API_BASE_URL}/auth/refresh-token`,
+            {
+              refreshToken,
+            }
+          );
 
-          const { accessToken, refreshToken: newRefreshToken } = response.data.data;
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', newRefreshToken);
+          const { accessToken, refreshToken: newRefreshToken } =
+            response.data.data;
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", newRefreshToken);
 
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return apiClient(originalRequest);
         }
       } catch (refreshError) {
         // Refresh failed, clear tokens and redirect to login
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

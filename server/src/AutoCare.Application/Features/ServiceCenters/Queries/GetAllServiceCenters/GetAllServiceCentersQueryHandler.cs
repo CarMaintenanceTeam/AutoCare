@@ -66,6 +66,8 @@ namespace AutoCare.Application.Features.ServiceCenters.Queries.GetAllServiceCent
                 City = sc.City,
                 PhoneNumber = sc.PhoneNumber,
                 WorkingHours = sc.WorkingHours,
+                Latitude = sc.Latitude,
+                Longitude = sc.Longitude,
                 IsActive = sc.IsActive,
                 ServicesCount = sc.ServiceCenterServices.Count(scs => scs.IsAvailable),
                 Distance = null // Will be calculated if location provided

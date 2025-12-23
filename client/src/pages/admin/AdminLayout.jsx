@@ -1,19 +1,21 @@
 import React from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const isAdminLike = user?.userType === 'Admin' || user?.userType === 'Employee';
 
   if (!isAdminLike) {
+    // Extra protection: if a non-admin/employee somehow reaches /admin,
+    // immediately redirect them away instead of showing admin UI.
     return (
-      <div className="container mt-5 pt-4">
-        <div className="alert alert-danger">
-          <i className="fas fa-ban me-2"></i>
-          You do not have permission to access the admin area.
-        </div>
-      </div>
+      <Navigate
+        to="/dashboard"
+        replace
+        state={{ from: location, unauthorized: true }}
+      />
     );
   }
 
