@@ -1,4 +1,4 @@
-## Project Overview
+# Project Overview
 
 AutoCare is a full-stack car maintenance booking platform connecting customers with service centers. The backend uses .NET 9 with Clean Architecture and CQRS, while the frontend is built with React 19.
 
