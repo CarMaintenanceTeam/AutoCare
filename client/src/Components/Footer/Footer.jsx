@@ -25,9 +25,21 @@ repair services you can trust</p>
           <div className="col-md-4 mb-3">
             <h6>Follow Us</h6>
             <ul className="list-inline social-icons">
-              <li className="list-inline-item"><a href="#" className="text-white"><i class="fa-brands fa-facebook"></i></a></li>
-              <li className="list-inline-item"><a href="#" className="text-white"><i class="fa-brands fa-instagram"></i></a></li>
-              <li className="list-inline-item"><a href="#" className="text-white"><i class="fa-brands fa-x-twitter"></i></a></li>
+              <li className="list-inline-item">
+                <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-white">
+                  <i className="fa-brands fa-facebook"></i>
+                </a>
+              </li>
+              <li className="list-inline-item">
+                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-white">
+                  <i className="fa-brands fa-instagram"></i>
+                </a>
+              </li>
+              <li className="list-inline-item">
+                <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-white">
+                  <i className="fa-brands fa-x-twitter"></i>
+                </a>
+              </li>
             </ul>
           </div>
         </div>

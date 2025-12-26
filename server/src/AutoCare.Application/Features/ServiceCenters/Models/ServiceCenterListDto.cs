@@ -42,6 +42,18 @@ namespace AutoCare.Application.Features.ServiceCenters.Models
         public string? WorkingHours { get; set; }
 
         /// <summary>
+        /// Gets or sets the latitude of the service center.
+        /// Used by clients (e.g., maps) to place markers.
+        /// </summary>
+        public decimal Latitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude of the service center.
+        /// Used by clients (e.g., maps) to place markers.
+        /// </summary>
+        public decimal Longitude { get; set; }
+
+        /// <summary>
         /// Gets or sets the distance from user location (kilometers)
         /// Only populated when location filtering is used
         /// </summary>

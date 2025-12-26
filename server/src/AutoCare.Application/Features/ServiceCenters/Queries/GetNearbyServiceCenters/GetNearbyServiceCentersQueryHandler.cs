@@ -110,6 +110,8 @@ namespace AutoCare.Application.Features.ServiceCenters.Queries.GetNearbyServiceC
                     City = x.ServiceCenter.City,
                     PhoneNumber = x.ServiceCenter.PhoneNumber,
                     WorkingHours = x.ServiceCenter.WorkingHours,
+                    Latitude = x.ServiceCenter.Latitude,
+                    Longitude = x.ServiceCenter.Longitude,
                     IsActive = x.ServiceCenter.IsActive,
                     ServicesCount = x.ServiceCenter.ServiceCenterServices.Count(scs => scs.IsAvailable),
                     Distance = Math.Round(x.Distance, 2) // Round to 2 decimal places
