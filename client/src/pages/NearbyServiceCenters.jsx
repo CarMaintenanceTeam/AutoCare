@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { serviceCenterService } from '../api/serviceCenterService';
-import { serviceService } from '../api/serviceService';
-import Loading from '../Components/common/Loading';
-import ErrorMessage from '../Components/common/ErrorMessage';
+import React, { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { serviceService } from "../api/serviceService";
+import { serviceCenterService } from "../api/serviceCenterService";
 
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import Loading from "../Components/common/Loading";
+import ErrorMessage from "../Components/common/ErrorMessage";
+
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 // Fix default icon paths for Leaflet when bundled
 L.Icon.Default.mergeOptions({
@@ -29,13 +30,13 @@ const NearbyServiceCenters = () => {
   const pageSize = 50;
   const [pagination, setPagination] = useState(null);
 
-  const [serviceType, setServiceType] = useState('');
+  const [serviceType, setServiceType] = useState("");
   const [services, setServices] = useState([]);
-  const [selectedServiceId, setSelectedServiceId] = useState('');
+  const [selectedServiceId, setSelectedServiceId] = useState("");
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setGeoError('Geolocation is not supported by your browser.');
+      setGeoError("Geolocation is not supported by your browser.");
       setLoading(false);
       return;
     }
@@ -51,7 +52,9 @@ const NearbyServiceCenters = () => {
       },
       (err) => {
         console.error(err);
-        setGeoError('Unable to get your location. You can still see nearby centers on the default map.');
+        setGeoError(
+          "Unable to get your location. You can still see nearby centers on the default map."
+        );
         // Default to a reasonable location (e.g., Cairo)
         const coords = { lat: 30.0444, lng: 31.2357 };
         setPosition(coords);
@@ -71,7 +74,7 @@ const NearbyServiceCenters = () => {
         });
         setServices(response.data || []);
       } catch (err) {
-        console.error('Failed to load services for filters', err);
+        console.error("Failed to load services for filters", err);
       }
     };
 
@@ -95,7 +98,10 @@ const NearbyServiceCenters = () => {
       setPagination(response.pagination || null);
       setPageNumber(page);
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to load nearby service centers');
+      setError(
+        err.response?.data?.errors?.[0] ||
+          "Failed to load nearby service centers"
+      );
     } finally {
       setLoading(false);
     }
@@ -112,7 +118,7 @@ const NearbyServiceCenters = () => {
   const handleServiceTypeChange = (e) => {
     const value = e.target.value;
     setServiceType(value);
-    setSelectedServiceId('');
+    setSelectedServiceId("");
     if (position) {
       fetchNearby(position, radiusKm, 1, undefined);
     }
@@ -140,9 +146,12 @@ const NearbyServiceCenters = () => {
     <div className="container mt-5 pt-4">
       <div className="row mb-4">
         <div className="col-12">
-          <h1 className="mb-2">Nearby Service Centers</h1>
-          <p className="text-muted mb-0">
-            View service centers around your current location and click on a marker for details.
+          <h1 className="mb-2 all-services text-center">
+            Nearby Service Centers
+          </h1>
+          <p className="text-white text-center mb-3">
+            View service centers around your current location and click on a
+            marker for details.
           </p>
           {geoError && (
             <div className="alert alert-warning mt-3">
@@ -153,7 +162,14 @@ const NearbyServiceCenters = () => {
         </div>
       </div>
 
-      {error && <ErrorMessage message={error} onRetry={() => position && fetchNearby(position, radiusKm, pageNumber)} />}
+      {error && (
+        <ErrorMessage
+          message={error}
+          onRetry={() =>
+            position && fetchNearby(position, radiusKm, pageNumber)
+          }
+        />
+      )}
 
       <div className="row mb-4">
         <div className="col-md-3 mb-3">
@@ -172,8 +188,7 @@ const NearbyServiceCenters = () => {
           <select
             className="form-select"
             value={serviceType}
-            onChange={handleServiceTypeChange}
-          >
+            onChange={handleServiceTypeChange}>
             <option value="">All types</option>
             <option value="Maintenance">Maintenance</option>
             <option value="SpareParts">Spare Parts</option>
@@ -184,8 +199,7 @@ const NearbyServiceCenters = () => {
           <select
             className="form-select"
             value={selectedServiceId}
-            onChange={handleServiceChange}
-          >
+            onChange={handleServiceChange}>
             <option value="">All services</option>
             {services.map((service) => (
               <option key={service.id} value={service.id}>
@@ -197,9 +211,12 @@ const NearbyServiceCenters = () => {
       </div>
 
       <div className="row">
-        <div className="col-12 mb-4" style={{ height: '400px' }}>
+        <div className="col-12 mb-4" style={{ height: "400px" }}>
           {position && (
-            <MapContainer center={[position.lat, position.lng]} zoom={12} style={{ height: '100%', width: '100%' }}>
+            <MapContainer
+              center={[position.lat, position.lng]}
+              zoom={12}
+              style={{ height: "100%", width: "100%" }}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -214,8 +231,7 @@ const NearbyServiceCenters = () => {
               {serviceCenters.map((center) => (
                 <Marker
                   key={center.id}
-                  position={[center.latitude, center.longitude]}
-                >
+                  position={[center.latitude, center.longitude]}>
                   <Popup>
                     <div>
                       <h6 className="mb-1">{center.nameEn}</h6>
@@ -233,7 +249,9 @@ const NearbyServiceCenters = () => {
                           {center.distance.toFixed(1)} km away
                         </p>
                       )}
-                      <a href={`/service-centers/${center.id}`}>View details &amp; book</a>
+                      <a href={`/service-centers/${center.id}`}>
+                        View details &amp; book
+                      </a>
                     </div>
                   </Popup>
                 </Marker>
@@ -246,24 +264,22 @@ const NearbyServiceCenters = () => {
       {pagination && (
         <div className="d-flex justify-content-between align-items-center mt-2">
           <span className="text-muted">
-            Page {pagination.pageNumber} of {pagination.totalPages} ({pagination.totalCount}{' '}
-            centers)
+            Page {pagination.pageNumber} of {pagination.totalPages} (
+            {pagination.totalCount} centers)
           </span>
           <div>
             <button
               type="button"
               className="btn btn-outline-secondary btn-sm me-2"
               onClick={() => handlePageChange(pagination.pageNumber - 1)}
-              disabled={!pagination.hasPreviousPage}
-            >
+              disabled={!pagination.hasPreviousPage}>
               Previous
             </button>
             <button
               type="button"
               className="btn btn-outline-secondary btn-sm"
               onClick={() => handlePageChange(pagination.pageNumber + 1)}
-              disabled={!pagination.hasNextPage}
-            >
+              disabled={!pagination.hasNextPage}>
               Next
             </button>
           </div>

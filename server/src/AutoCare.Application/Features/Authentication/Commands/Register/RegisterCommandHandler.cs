@@ -77,7 +77,13 @@ namespace AutoCare.Application.Features.Authentication.Commands.Register
 
             _context.Users.Add(user);
 
-            // 4. Create Customer profile
+
+
+            // Persist user first so that EF Core generates a positive primary key (Id)
+            // required by the Customer.Create factory (it enforces userId > 0).
+            await _context.SaveChangesAsync(cancellationToken);
+
+            // 4. Create Customer entity linked to User
             var customer = Customer.Create(
                 userId: user.Id,
                 address: request.Address,
@@ -86,6 +92,7 @@ namespace AutoCare.Application.Features.Authentication.Commands.Register
             _context.Customers.Add(customer);
 
             // 5. Save to database (atomic transaction)
+            // Save customer to database
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(

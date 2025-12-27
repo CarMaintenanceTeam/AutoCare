@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { vehicleService } from '../api/vehicleService';
-import Loading from '../Components/common/Loading';
-import ErrorMessage from '../Components/common/ErrorMessage';
+import React, { useState, useEffect } from "react";
+import { vehicleService } from "../api/vehicleService";
+import Loading from "../Components/common/Loading";
+import ErrorMessage from "../Components/common/ErrorMessage";
 
 const Vehicles = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -10,12 +10,12 @@ const Vehicles = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [formData, setFormData] = useState({
-    brand: '',
-    model: '',
+    brand: "",
+    model: "",
     year: new Date().getFullYear(),
-    plateNumber: '',
-    vin: '',
-    color: '',
+    plateNumber: "",
+    vin: "",
+    color: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -31,7 +31,7 @@ const Vehicles = () => {
       const response = await vehicleService.getMyVehicles();
       setVehicles(response.data || []);
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to load vehicles');
+      setError(err.response?.data?.errors?.[0] || "Failed to load vehicles");
     } finally {
       setLoading(false);
     }
@@ -51,20 +51,21 @@ const Vehicles = () => {
       await fetchVehicles();
       handleCloseModal();
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to save vehicle');
+      setError(err.response?.data?.errors?.[0] || "Failed to save vehicle");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+    if (!window.confirm("Are you sure you want to delete this vehicle?"))
+      return;
 
     try {
       await vehicleService.deleteVehicle(id);
       await fetchVehicles();
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to delete vehicle');
+      setError(err.response?.data?.errors?.[0] || "Failed to delete vehicle");
     }
   };
 
@@ -76,18 +77,18 @@ const Vehicles = () => {
         model: vehicle.model,
         year: vehicle.year,
         plateNumber: vehicle.plateNumber,
-        vin: '', // VIN is not exposed in list DTO; keep empty for updates
-        color: vehicle.color || '',
+        vin: "", // VIN is not exposed in list DTO; keep empty for updates
+        color: vehicle.color || "",
       });
     } else {
       setEditingVehicle(null);
       setFormData({
-        brand: '',
-        model: '',
+        brand: "",
+        model: "",
         year: new Date().getFullYear(),
-        plateNumber: '',
-        vin: '',
-        color: '',
+        plateNumber: "",
+        vin: "",
+        color: "",
       });
     }
     setShowModal(true);
@@ -107,17 +108,23 @@ const Vehicles = () => {
         <div className="col-12">
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h1 className="mb-2">My Vehicles</h1>
-              <p className="text-muted">Manage your registered vehicles</p>
+              <h1 className="mb-2 text-white">My Vehicles</h1>
+              <p className="all-services small">
+                Manage your registered vehicles
+              </p>
             </div>
-            <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+            <button
+              className="btn search-button"
+              onClick={() => handleOpenModal()}>
               <i className="fas fa-plus me-2"></i>Add Vehicle
             </button>
           </div>
         </div>
       </div>
 
-      {error && !showModal && <ErrorMessage message={error} onRetry={fetchVehicles} />}
+      {error && !showModal && (
+        <ErrorMessage message={error} onRetry={fetchVehicles} />
+      )}
 
       <div className="row g-4">
         {vehicles.length === 0 ? (
@@ -133,34 +140,32 @@ const Vehicles = () => {
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title mb-0">
+                    <h5 className="card-title text-white mb-0">
                       {vehicle.brand} {vehicle.model}
                     </h5>
-                    <div className="btn-group btn-group-sm">
+                    <div className="btn-group  btn-group-sm">
                       <button
-                        className="btn btn-outline-primary"
-                        onClick={() => handleOpenModal(vehicle)}
-                      >
+                        className="btn btn-outline-warning  me-3"
+                        onClick={() => handleOpenModal(vehicle)}>
                         <i className="fas fa-edit"></i>
                       </button>
                       <button
-                        className="btn btn-outline-danger"
-                        onClick={() => handleDelete(vehicle.id)}
-                      >
+                        className="btn btn-outline-warning"
+                        onClick={() => handleDelete(vehicle.id)}>
                         <i className="fas fa-trash"></i>
                       </button>
                     </div>
                   </div>
-                  <p className="text-muted mb-2">
+                  <p className="text-white fw-light mb-2">
                     <i className="fas fa-calendar me-2"></i>
                     <strong>Year:</strong> {vehicle.year}
                   </p>
-                  <p className="text-muted mb-2">
+                  <p className="text-white fw-light mb-2">
                     <i className="fas fa-id-card me-2"></i>
                     <strong>Plate:</strong> {vehicle.plateNumber}
                   </p>
                   {vehicle.color && (
-                    <p className="text-muted mb-2">
+                    <p className="text-white fw-light mb-2">
                       <i className="fas fa-palette me-2"></i>
                       <strong>Color:</strong> {vehicle.color}
                     </p>
@@ -174,14 +179,19 @@ const Vehicles = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">
-                  {editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
+                  {editingVehicle ? "Edit Vehicle" : "Add New Vehicle"}
                 </h5>
-                <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}></button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
@@ -194,7 +204,9 @@ const Vehicles = () => {
                         type="text"
                         className="form-control"
                         value={formData.brand}
-                        onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, brand: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -204,7 +216,9 @@ const Vehicles = () => {
                         type="text"
                         className="form-control"
                         value={formData.model}
-                        onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, model: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -214,7 +228,14 @@ const Vehicles = () => {
                         type="number"
                         className="form-control"
                         value={formData.year}
-                        onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value, 10) || new Date().getFullYear() })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            year:
+                              parseInt(e.target.value, 10) ||
+                              new Date().getFullYear(),
+                          })
+                        }
                         min="1900"
                         max={new Date().getFullYear() + 1}
                         required
@@ -226,7 +247,12 @@ const Vehicles = () => {
                         type="text"
                         className="form-control"
                         value={formData.plateNumber}
-                        onChange={(e) => setFormData({ ...formData, plateNumber: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            plateNumber: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -236,7 +262,9 @@ const Vehicles = () => {
                         type="text"
                         className="form-control"
                         value={formData.color}
-                        onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, color: e.target.value })
+                        }
                       />
                     </div>
                     {!editingVehicle && (
@@ -246,24 +274,32 @@ const Vehicles = () => {
                           type="text"
                           className="form-control"
                           value={formData.vin}
-                          onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, vin: e.target.value })
+                          }
                         />
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleCloseModal}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={submitting}>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={submitting}>
                     {submitting ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
                         Saving...
                       </>
                     ) : (
-                      'Save Vehicle'
+                      "Save Vehicle"
                     )}
                   </button>
                 </div>

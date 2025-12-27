@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { serviceService } from '../../api/serviceService';
-import Loading from '../common/Loading';
-import ErrorMessage from '../common/ErrorMessage';
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { serviceService } from "../../api/serviceService";
+import Loading from "../common/Loading";
+import ErrorMessage from "../common/ErrorMessage";
+import "./style.css";
 
 const ServiceDetails = () => {
   const { id } = useParams();
@@ -18,7 +19,9 @@ const ServiceDetails = () => {
         const response = await serviceService.getServiceById(id, true);
         setService(response.data);
       } catch (err) {
-        setError(err.response?.data?.errors?.[0] || 'Failed to load service details');
+        setError(
+          err.response?.data?.errors?.[0] || "Failed to load service details"
+        );
       } finally {
         setLoading(false);
       }
@@ -28,15 +31,15 @@ const ServiceDetails = () => {
   }, [id]);
 
   if (loading) return <Loading message="Loading service details..." />;
-  if (!service) return <ErrorMessage message={error || 'Service not found'} />;
+  if (!service) return <ErrorMessage message={error || "Service not found"} />;
 
   return (
     <div className="container mt-5 pt-4">
       <div className="row mb-4">
         <div className="col-12">
-          <h1 className="mb-2">{service.nameEn}</h1>
+          <h1 className="mb-2 text-center service-name">{service.nameEn}</h1>
           {service.descriptionEn && (
-            <p className="text-muted">{service.descriptionEn}</p>
+            <p className="text-center text-white">{service.descriptionEn}</p>
           )}
         </div>
       </div>
@@ -44,19 +47,20 @@ const ServiceDetails = () => {
       <div className="row mb-4">
         <div className="col-md-6">
           <div className="card shadow-sm h-100">
-            <div className="card-body">
+            <div className="card-details-body">
               <h5 className="card-title mb-3">Service Information</h5>
-              <p className="mb-2">
+              <p className="mb-3">
                 <strong>Type:</strong> {service.serviceType}
               </p>
-              <p className="mb-2">
+              <p className="mb-3">
                 <strong>Base Price:</strong> {service.basePrice} EGP
               </p>
-              <p className="mb-2">
-                <strong>Estimated Duration:</strong> {service.estimatedDurationMinutes} minutes
+              <p className="mb-3">
+                <strong>Estimated Duration:</strong>{" "}
+                {service.estimatedDurationMinutes} minutes
               </p>
-              <p className="mb-0">
-                <strong>Status:</strong>{' '}
+              <p className="mb-3">
+                <strong>Status:</strong>{" "}
                 {service.isActive ? (
                   <span className="badge bg-success">Active</span>
                 ) : (
@@ -70,16 +74,22 @@ const ServiceDetails = () => {
         <div className="col-md-6">
           <div className="card shadow-sm h-100">
             <div className="card-body">
-              <h5 className="card-title mb-3">Where You Can Get This Service</h5>
+              <h5 className="card-title mb-3">
+                Where You Can Get This Service
+              </h5>
 
-              {!service.serviceCenters || service.serviceCenters.length === 0 ? (
+              {!service.serviceCenters ||
+              service.serviceCenters.length === 0 ? (
                 <p className="text-muted mb-0">
-                  This service is not currently available at any service centers.
+                  This service is not currently available at any service
+                  centers.
                 </p>
               ) : (
-                <ul className="list-group list-group-flush">
+                <ul className="list-group list-group-flush ">
                   {service.serviceCenters.map((center) => (
-                    <li key={center.serviceCenterId} className="list-group-item">
+                    <li
+                      key={center.serviceCenterId}
+                      className="list-group-item mb-3">
                       <div className="d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-1">{center.nameEn}</h6>
@@ -94,8 +104,7 @@ const ServiceDetails = () => {
                           </p>
                           <Link
                             to={`/service-centers/${center.serviceCenterId}`}
-                            className="btn btn-sm btn-primary"
-                          >
+                            className="btn btn-sm btn-primary center-button">
                             View Center &amp; Book
                           </Link>
                         </div>
@@ -110,7 +119,9 @@ const ServiceDetails = () => {
       </div>
 
       <div className="mt-3">
-        <Link to="/services" className="btn btn-outline-secondary">
+        <Link
+          to="/services"
+          className="btn btn-outline-secondary pagination-button">
           &larr; Back to services list
         </Link>
       </div>

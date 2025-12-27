@@ -1,4 +1,4 @@
-.service-card{
+.service-card {
   background-color: rgba(128, 128, 128, 0.3);
   border: none;
   border-radius: 10px;
@@ -9,20 +9,50 @@
   justify-content: space-between;
 }
 
-.title{
-  color: #E1AD01;
+.title {
+  color: #e1ad01;
   font-weight: 500;
   font-size: 18px;
 }
 
-.details-button{
-  background-color: #E1AD01 !important;
+.details-button {
+  background-color: #e1ad01 !important;
   color: #fff !important;
   border-radius: 999px;
 }
 
 @media (max-width: 576px) {
-  .service-card{
+  .service-card {
     min-height: 200px;
   }
+}
+
+.all-services {
+  color: #e1ad01 !important;
+}
+
+.filter-button {
+  background-color: #e1ad01 !important;
+  color: #fff !important;
+  border: none !important;
+  width: 100px !important ;
+}
+
+.card {
+  background-color: rgba(128, 128, 128, 0.3);
+
+  border: none;
+  border-radius: 10px;
+}
+
+.card-body {
+  color: #e1ad01 !important;
+  font-weight: 600;
+  text-align: center;
+}
+
+.pagination-button {
+  background-color: #e1ad01 !important;
+  color: #fff !important;
+  border: none !important;
 }

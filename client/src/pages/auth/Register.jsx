@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import './Auth.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import "./Auth.css";
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    phoneNumber: '',
-    address: '',
-    city: '',
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ const Register = () => {
     if (errors[e.target.name]) {
       setErrors({
         ...errors,
-        [e.target.name]: '',
+        [e.target.name]: "",
       });
     }
   };
@@ -36,35 +36,35 @@ const Register = () => {
     const newErrors = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (!formData.fullName) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = "Full name is required";
     }
 
     if (!formData.phoneNumber) {
-      newErrors.phoneNumber = 'Phone number is required';
+      newErrors.phoneNumber = "Phone number is required";
     }
 
     if (!formData.address) {
-      newErrors.address = 'Address is required';
+      newErrors.address = "Address is required";
     }
 
     if (!formData.city) {
-      newErrors.city = 'City is required';
+      newErrors.city = "City is required";
     }
 
     setErrors(newErrors);
@@ -85,12 +85,12 @@ const Register = () => {
       const result = await register(registrationData);
 
       if (result.success) {
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
         setErrors({ general: result.message });
       }
     } catch (err) {
-      setErrors({ general: 'An unexpected error occurred. Please try again.' });
+      setErrors({ general: "An unexpected error occurred. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const Register = () => {
             <div className="auth-card card shadow-lg">
               <div className="card-body p-5">
                 <div className="text-center mb-4">
-                  <h2 className="fw-bold">Create Account</h2>
+                  <h2 className="fw-bold all-services">Create Account</h2>
                   <p className="text-muted">Join AutoCare today</p>
                 </div>
 
@@ -123,14 +123,20 @@ const Register = () => {
                       </label>
                       <input
                         type="text"
-                        className={`form-control ${errors.fullName ? 'is-invalid' : ''}`}
+                        className={`form-control ${
+                          errors.fullName ? "is-invalid" : ""
+                        }`}
                         id="fullName"
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleChange}
                         placeholder="John Doe"
                       />
-                      {errors.fullName && <div className="invalid-feedback">{errors.fullName}</div>}
+                      {errors.fullName && (
+                        <div className="invalid-feedback">
+                          {errors.fullName}
+                        </div>
+                      )}
                     </div>
 
                     <div className="col-md-6 mb-3">
@@ -139,14 +145,18 @@ const Register = () => {
                       </label>
                       <input
                         type="email"
-                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                        className={`form-control ${
+                          errors.email ? "is-invalid" : ""
+                        }`}
                         id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="john@example.com"
                       />
-                      {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                      {errors.email && (
+                        <div className="invalid-feedback">{errors.email}</div>
+                      )}
                     </div>
                   </div>
 
@@ -157,14 +167,20 @@ const Register = () => {
                       </label>
                       <input
                         type="password"
-                        className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                        className={`form-control ${
+                          errors.password ? "is-invalid" : ""
+                        }`}
                         id="password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="••••••••"
                       />
-                      {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                      {errors.password && (
+                        <div className="invalid-feedback">
+                          {errors.password}
+                        </div>
+                      )}
                     </div>
 
                     <div className="col-md-6 mb-3">
@@ -173,14 +189,20 @@ const Register = () => {
                       </label>
                       <input
                         type="password"
-                        className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                        className={`form-control ${
+                          errors.confirmPassword ? "is-invalid" : ""
+                        }`}
                         id="confirmPassword"
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         placeholder="••••••••"
                       />
-                      {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
+                      {errors.confirmPassword && (
+                        <div className="invalid-feedback">
+                          {errors.confirmPassword}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -191,14 +213,20 @@ const Register = () => {
                       </label>
                       <input
                         type="tel"
-                        className={`form-control ${errors.phoneNumber ? 'is-invalid' : ''}`}
+                        className={`form-control ${
+                          errors.phoneNumber ? "is-invalid" : ""
+                        }`}
                         id="phoneNumber"
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleChange}
                         placeholder="01012345678"
                       />
-                      {errors.phoneNumber && <div className="invalid-feedback">{errors.phoneNumber}</div>}
+                      {errors.phoneNumber && (
+                        <div className="invalid-feedback">
+                          {errors.phoneNumber}
+                        </div>
+                      )}
                     </div>
 
                     <div className="col-md-6 mb-3">
@@ -207,14 +235,18 @@ const Register = () => {
                       </label>
                       <input
                         type="text"
-                        className={`form-control ${errors.city ? 'is-invalid' : ''}`}
+                        className={`form-control ${
+                          errors.city ? "is-invalid" : ""
+                        }`}
                         id="city"
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
                         placeholder="Cairo"
                       />
-                      {errors.city && <div className="invalid-feedback">{errors.city}</div>}
+                      {errors.city && (
+                        <div className="invalid-feedback">{errors.city}</div>
+                      )}
                     </div>
                   </div>
 
@@ -224,35 +256,41 @@ const Register = () => {
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${errors.address ? 'is-invalid' : ''}`}
+                      className={`form-control ${
+                        errors.address ? "is-invalid" : ""
+                      }`}
                       id="address"
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
                       placeholder="123 Main Street"
                     />
-                    {errors.address && <div className="invalid-feedback">{errors.address}</div>}
+                    {errors.address && (
+                      <div className="invalid-feedback">{errors.address}</div>
+                    )}
                   </div>
 
                   <button
                     type="submit"
                     className="btn btn-primary w-100 mb-3"
-                    disabled={loading}
-                  >
+                    disabled={loading}>
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"></span>
                         Creating Account...
                       </>
                     ) : (
-                      'Create Account'
+                      "Create Account"
                     )}
                   </button>
 
                   <div className="text-center">
                     <p className="mb-0">
-                      Already have an account?{' '}
-                      <Link to="/login" className="text-primary fw-bold">
+                      Already have an account?{" "}
+                      <Link to="/login" className="text-white fw-bold">
                         Sign In
                       </Link>
                     </p>

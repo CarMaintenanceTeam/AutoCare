@@ -2,7 +2,6 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px 0;
 }
 
@@ -27,16 +26,10 @@
 }
 
 .auth-container .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #e1ad01;
   border: none;
   padding: 12px;
   font-weight: 600;
-  transition: transform 0.2s;
-}
-
-.auth-container .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .auth-container .form-control {
@@ -45,15 +38,9 @@
   border: 1px solid #e2e8f0;
 }
 
-.auth-container .form-control:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-}
-
 .auth-container .form-label {
   font-weight: 600;
-  color: #4a5568;
-  margin-bottom: 0.5rem;
+  color: #e1ad01;
 }
 
 .auth-container hr {

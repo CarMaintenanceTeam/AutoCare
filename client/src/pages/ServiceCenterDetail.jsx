@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { serviceCenterService } from '../api/serviceCenterService';
-import { serviceService } from '../api/serviceService';
-import { vehicleService } from '../api/vehicleService';
-import { bookingService } from '../api/bookingService';
-import Loading from '../Components/common/Loading';
-import ErrorMessage from '../Components/common/ErrorMessage';
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { serviceCenterService } from "../api/serviceCenterService";
+import { serviceService } from "../api/serviceService";
+import { vehicleService } from "../api/vehicleService";
+import { bookingService } from "../api/bookingService";
+import Loading from "../Components/common/Loading";
+import ErrorMessage from "../Components/common/ErrorMessage";
 
 const ServiceCenterDetail = () => {
   const { id } = useParams();
@@ -16,11 +16,11 @@ const ServiceCenterDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingForm, setBookingForm] = useState({
-    vehicleId: '',
-    serviceId: '',
-    bookingDate: '',
-    bookingTime: '',
-    customerNotes: '',
+    vehicleId: "",
+    serviceId: "",
+    bookingDate: "",
+    bookingTime: "",
+    customerNotes: "",
   });
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -40,7 +40,7 @@ const ServiceCenterDetail = () => {
       setServices(servicesRes.data || []);
       setVehicles(vehiclesRes.data || []);
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to load data');
+      setError(err.response?.data?.errors?.[0] || "Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -56,26 +56,61 @@ const ServiceCenterDetail = () => {
     setError(null);
 
     try {
-      await bookingService.createBooking({
-        ...bookingForm,
-        serviceCenterId: parseInt(id),
-        vehicleId: parseInt(bookingForm.vehicleId),
-        serviceId: parseInt(bookingForm.serviceId),
-      });
+      // await bookingService.createBooking({
+      //   ...bookingForm,
+      //   serviceCenterId: parseInt(id),
+      //   vehicleId: parseInt(bookingForm.vehicleId),
+      //   serviceId: parseInt(bookingForm.serviceId),
+      // });
+      // Normalize payload to match backend CreateBookingCommand:
+      // - vehicleId, serviceId, serviceCenterId as integers
+      // - bookingDate as ISO date string (YYYY-MM-DD)
+      // - bookingTime as string (HH:MM:SS) (TimeSpan-compatible)
+      const vehicleId = parseInt(bookingForm.vehicleId, 10);
+      const serviceId = parseInt(bookingForm.serviceId, 10);
+      const serviceCenterId = parseInt(id, 10);
+      const [hours, minutes] = (bookingForm.bookingTime || "").split(":");
+      const bookingTime = hours && minutes ? `${hours}:${minutes}:00` : "";
+      const payload = {
+        vehicleId,
+        serviceCenterId,
+        serviceId,
+        bookingDate: bookingForm.bookingDate,
+        bookingTime,
+        customerNotes: bookingForm.customerNotes || null,
+      };
+
+      const response = await bookingService.createBooking(payload);
+
+      if (response && response.success === false) {
+        const message =
+          response.errors?.[0] || response.error || "Failed to create booking";
+        setError(message);
+        return;
+      }
 
       setBookingSuccess(true);
       setTimeout(() => {
-        navigate('/bookings');
+        navigate("/bookings");
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to create booking');
+      // setError(err.response?.data?.errors?.[0] || "Failed to create booking");
+      const apiError = err.response?.data;
+      const message =
+        apiError?.errors?.command?.[0] ||
+        apiError?.errors?.["$.vehicleId"]?.[0] ||
+        apiError?.errors?.[0] ||
+        apiError?.title ||
+        "Failed to create booking";
+      setError(message);
     } finally {
       setBookingLoading(false);
     }
   };
 
   if (loading) return <Loading message="Loading service center..." />;
-  if (!serviceCenter) return <ErrorMessage message="Service center not found" />;
+  if (!serviceCenter)
+    return <ErrorMessage message="Service center not found" />;
 
   return (
     <div className="container mt-5 pt-4">
@@ -122,9 +157,12 @@ const ServiceCenterDetail = () => {
                 <div className="card h-100">
                   <div className="card-body">
                     <h5 className="card-title">{service.nameEn}</h5>
-                    <p className="card-text text-muted">{service.descriptionEn}</p>
+                    <p className="card-text text-muted">
+                      {service.descriptionEn}
+                    </p>
                     <p className="mb-0">
-                      <strong>Price:</strong> {service.customPrice || service.basePrice} EGP
+                      <strong>Price:</strong>{" "}
+                      {service.customPrice || service.basePrice} EGP
                     </p>
                     <p className="text-muted small">
                       Duration: ~{service.estimatedDurationMinutes} minutes
@@ -156,8 +194,10 @@ const ServiceCenterDetail = () => {
               {vehicles.length === 0 ? (
                 <div className="alert alert-warning">
                   <i className="fas fa-exclamation-triangle me-2"></i>
-                  You need to add a vehicle before booking. 
-                  <a href="/vehicles" className="alert-link ms-2">Add Vehicle</a>
+                  You need to add a vehicle before booking.
+                  <a href="/vehicles" className="alert-link ms-2">
+                    Add Vehicle
+                  </a>
                 </div>
               ) : (
                 <form onSubmit={handleBookingSubmit}>
@@ -167,13 +207,18 @@ const ServiceCenterDetail = () => {
                       <select
                         className="form-select"
                         value={bookingForm.vehicleId}
-                        onChange={(e) => setBookingForm({ ...bookingForm, vehicleId: e.target.value })}
-                        required
-                      >
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            vehicleId: e.target.value,
+                          })
+                        }
+                        required>
                         <option value="">Choose vehicle...</option>
                         {vehicles.map((vehicle) => (
-                          <option key={vehicle.vehicleId} value={vehicle.vehicleId}>
-                            {vehicle.brand} {vehicle.model} ({vehicle.plateNumber})
+                          <option key={vehicle.vehicleId} value={vehicle.id}>
+                            {vehicle.brand} {vehicle.model} (
+                            {vehicle.plateNumber})
                           </option>
                         ))}
                       </select>
@@ -184,13 +229,20 @@ const ServiceCenterDetail = () => {
                       <select
                         className="form-select"
                         value={bookingForm.serviceId}
-                        onChange={(e) => setBookingForm({ ...bookingForm, serviceId: e.target.value })}
-                        required
-                      >
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            serviceId: e.target.value,
+                          })
+                        }
+                        required>
                         <option value="">Choose service...</option>
                         {services.map((service) => (
-                          <option key={service.serviceId} value={service.serviceId}>
-                            {service.nameEn} - {service.customPrice || service.basePrice} EGP
+                          <option
+                            key={service.serviceId}
+                            value={service.serviceId}>
+                            {service.nameEn} -{" "}
+                            {service.customPrice || service.basePrice} EGP
                           </option>
                         ))}
                       </select>
@@ -202,8 +254,13 @@ const ServiceCenterDetail = () => {
                         type="date"
                         className="form-control"
                         value={bookingForm.bookingDate}
-                        onChange={(e) => setBookingForm({ ...bookingForm, bookingDate: e.target.value })}
-                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            bookingDate: e.target.value,
+                          })
+                        }
+                        min={new Date().toISOString().split("T")[0]}
                         required
                       />
                     </div>
@@ -214,7 +271,12 @@ const ServiceCenterDetail = () => {
                         type="time"
                         className="form-control"
                         value={bookingForm.bookingTime}
-                        onChange={(e) => setBookingForm({ ...bookingForm, bookingTime: e.target.value })}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            bookingTime: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -225,17 +287,20 @@ const ServiceCenterDetail = () => {
                         className="form-control"
                         rows="3"
                         value={bookingForm.customerNotes}
-                        onChange={(e) => setBookingForm({ ...bookingForm, customerNotes: e.target.value })}
-                        placeholder="Any special requests or notes..."
-                      ></textarea>
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            customerNotes: e.target.value,
+                          })
+                        }
+                        placeholder="Any special requests or notes..."></textarea>
                     </div>
 
                     <div className="col-12">
                       <button
                         type="submit"
                         className="btn btn-primary btn-lg"
-                        disabled={bookingLoading || bookingSuccess}
-                      >
+                        disabled={bookingLoading || bookingSuccess}>
                         {bookingLoading ? (
                           <>
                             <span className="spinner-border spinner-border-sm me-2"></span>
