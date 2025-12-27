@@ -8,6 +8,7 @@ using AutoCare.Application.Common.Interfaces;
 using AutoCare.Application.Features.Bookings.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using AutoCare.Domain.Enums;
 
 namespace AutoCare.Application.Features.Bookings.Queries.GetBookingById
 {
@@ -107,9 +108,12 @@ namespace AutoCare.Application.Features.Bookings.Queries.GetBookingById
             var isOwner = await _context.Customers
                 .AnyAsync(c => c.Id == booking.CustomerId && c.UserId == userId, cancellationToken);
 
-            var isEmployee = _currentUserService.UserType == "Employee";
-
-            if (!isOwner && !isEmployee)
+            // var isEmployee = _currentUserService.UserType == "Employee";
+            var userType = _currentUserService.UserType;
+            var isStaff = !string.IsNullOrWhiteSpace(userType) &&
+                (userType.Equals(UserType.Employee.ToString(), StringComparison.OrdinalIgnoreCase) ||
+                 userType.Equals(UserType.Admin.ToString(), StringComparison.OrdinalIgnoreCase));
+            if (!isOwner && !isStaff)
             {
                 throw new ForbiddenException("You don't have permission to view this booking");
             }

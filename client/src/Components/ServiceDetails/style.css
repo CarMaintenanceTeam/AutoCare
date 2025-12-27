@@ -1,0 +1,21 @@
+.service-name {
+  color: #e1ad01 !important;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.card-details-body {
+  border: none;
+  border-radius: 10px;
+  padding: 20px;
+  color: white !important;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.center-button {
+  background-color: #e1ad01 !important;
+  color: #fff !important;
+  border: none !important;
+}

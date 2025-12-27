@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { serviceService } from '../../api/serviceService';
-import Loading from '../common/Loading';
-import ErrorMessage from '../common/ErrorMessage';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { serviceService } from "../../api/serviceService";
+import Loading from "../common/Loading";
+import ErrorMessage from "../common/ErrorMessage";
 
 const Services = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    serviceType: '',
+    serviceType: "",
   });
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 9;
@@ -34,7 +34,7 @@ const Services = () => {
       setPagination(response.pagination || null);
       setPageNumber(page);
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to load services');
+      setError(err.response?.data?.errors?.[0] || "Failed to load services");
     } finally {
       setLoading(false);
     }
@@ -59,27 +59,28 @@ const Services = () => {
 
   return (
     <div className="container mt-5 pt-4">
-      <div className="row mb-4">
-        <div className="col-12 d-flex justify-content-between align-items-center">
-          <div>
-            <h1 className="mb-2">All Services</h1>
-            <p className="text-muted mb-0">
-              Browse available maintenance and spare parts services
-            </p>
-          </div>
+      <div className="row mb-4 align-items-center">
+        <div className="col-md-4"></div>
 
-          <form className="d-flex" onSubmit={handleFilterSubmit}>
+        <div className="col-md-4 text-center">
+          <h1 className="all-services">All Services</h1>
+          <p className="text-white">
+            Browse available maintenance and spare parts services
+          </p>
+        </div>
+
+        <div className="col-md-4 mb-5 d-flex justify-content-end">
+          <form className="d-flex " onSubmit={handleFilterSubmit}>
             <select
-              className="form-select me-2"
+              className="form-select me-2 "
               value={filters.serviceType}
-              onChange={handleFilterChange}
-            >
+              onChange={handleFilterChange}>
               <option value="">All Types</option>
               <option value="Maintenance">Maintenance</option>
               <option value="SpareParts">Spare Parts</option>
             </select>
-            <button type="submit" className="btn btn-primary">
-              <i className="fas fa-filter me-2"></i>Filter
+            <button type="submit" className="btn btn-primary filter-button">
+              Filter
             </button>
           </form>
         </div>
@@ -100,33 +101,31 @@ const Services = () => {
             <div key={service.id} className="col-md-6 col-lg-4">
               <div className="card h-100 shadow-sm">
                 <div className="card-body d-flex flex-column">
-                  <h5 className="card-title">{service.nameEn}</h5>
-                  <p className="text-muted small mb-2">
+                  <h5 className="card-title mt-2">{service.nameEn}</h5>
+                  <p className="text-white small mb-3">
                     <i className="fas fa-tag me-2"></i>
                     {service.serviceType}
                   </p>
-                  <p className="mb-1">
+                  <p className="mb-3">
                     <strong>Price:</strong> {service.basePrice} EGP
                   </p>
-                  <p className="text-muted small mb-3">
+                  <p className="text-white small mb-3">
                     <i className="fas fa-clock me-2"></i>
                     Approx. {service.estimatedDurationMinutes} minutes
                   </p>
-                  <p className="text-muted small mb-3">
+                  <p className="text-white small mb-3">
                     Available at {service.availableAt} service center(s)
                   </p>
 
-                  <div className="mt-auto d-flex justify-content-between align-items-center">
+                  <div className="mt-3 d-flex justify-content-between align-items-center">
                     <Link
                       to={`/services/${service.id}`}
-                      className="btn btn-outline-primary btn-sm"
-                    >
+                      className="btn details-button btn-sm">
                       View Details
                     </Link>
                     <Link
                       to="/service-centers"
-                      className="btn btn-link btn-sm text-decoration-none"
-                    >
+                      className="btn btn-link btn-sm details-button text-decoration-none">
                       Find Service Centers
                     </Link>
                   </div>
@@ -140,24 +139,22 @@ const Services = () => {
       {pagination && (
         <div className="d-flex justify-content-between align-items-center mt-4">
           <span className="text-muted">
-            Page {pagination.pageNumber} of {pagination.totalPages} ({pagination.totalCount}{' '}
-            services)
+            Page {pagination.pageNumber} of {pagination.totalPages} (
+            {pagination.totalCount} services)
           </span>
           <div>
             <button
               type="button"
-              className="btn btn-outline-secondary btn-sm me-2"
+              className="btn btn-outline-secondary agination-button btn-sm me-2"
               onClick={() => handlePageChange(pagination.pageNumber - 1)}
-              disabled={!pagination.hasPreviousPage}
-            >
+              disabled={!pagination.hasPreviousPage}>
               Previous
             </button>
             <button
               type="button"
-              className="btn btn-outline-secondary btn-sm"
+              className="btn  pagination-button btn-sm"
               onClick={() => handlePageChange(pagination.pageNumber + 1)}
-              disabled={!pagination.hasNextPage}
-            >
+              disabled={!pagination.hasNextPage}>
               Next
             </button>
           </div>

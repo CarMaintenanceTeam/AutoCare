@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { serviceCenterService } from '../api/serviceCenterService';
-import Loading from '../Components/common/Loading';
-import ErrorMessage from '../Components/common/ErrorMessage';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { serviceCenterService } from "../api/serviceCenterService";
+import Loading from "../Components/common/Loading";
+import ErrorMessage from "../Components/common/ErrorMessage";
+import "./style.css";
 
 const ServiceCenters = () => {
   const [serviceCenters, setServiceCenters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    city: '',
-    searchTerm: '',
+    city: "",
+    searchTerm: "",
   });
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 9;
@@ -36,8 +37,10 @@ const ServiceCenters = () => {
       // Client-side search by name since backend doesn't support searchTerm
       if (filters.searchTerm) {
         const term = filters.searchTerm.toLowerCase();
-        centers = centers.filter((c) =>
-          c.nameEn?.toLowerCase().includes(term) || c.nameAr?.toLowerCase().includes(term)
+        centers = centers.filter(
+          (c) =>
+            c.nameEn?.toLowerCase().includes(term) ||
+            c.nameAr?.toLowerCase().includes(term)
         );
       }
 
@@ -45,7 +48,9 @@ const ServiceCenters = () => {
       setPagination(response.pagination || null);
       setPageNumber(page);
     } catch (err) {
-      setError(err.response?.data?.errors?.[0] || 'Failed to load service centers');
+      setError(
+        err.response?.data?.errors?.[0] || "Failed to load service centers"
+      );
     } finally {
       setLoading(false);
     }
@@ -68,8 +73,10 @@ const ServiceCenters = () => {
     <div className="container mt-5 pt-4">
       <div className="row mb-4">
         <div className="col-12">
-          <h1 className="mb-3">Service Centers</h1>
-          <p className="text-muted">Find the best service centers near you</p>
+          <h1 className="mb-3 text-center all-services">Service Centers</h1>
+          <p className="text-white text-center">
+            Find the best service centers near you
+          </p>
         </div>
       </div>
 
@@ -83,10 +90,12 @@ const ServiceCenters = () => {
                   <div className="col-md-5">
                     <input
                       type="text"
-                      className="form-control"
-                      placeholder="Search by name..."
+                      className="form-control "
+                      placeholder="Search by name... "
                       value={filters.searchTerm}
-                      onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
+                      onChange={(e) =>
+                        setFilters({ ...filters, searchTerm: e.target.value })
+                      }
                     />
                   </div>
                   <div className="col-md-4">
@@ -95,11 +104,13 @@ const ServiceCenters = () => {
                       className="form-control"
                       placeholder="Filter by city..."
                       value={filters.city}
-                      onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+                      onChange={(e) =>
+                        setFilters({ ...filters, city: e.target.value })
+                      }
                     />
                   </div>
                   <div className="col-md-3">
-                    <button type="submit" className="btn btn-primary w-100">
+                    <button type="submit" className="btn  w-100 search-button">
                       <i className="fas fa-search me-2"></i>Search
                     </button>
                   </div>
@@ -112,7 +123,6 @@ const ServiceCenters = () => {
 
       {error && <ErrorMessage message={error} onRetry={fetchServiceCenters} />}
 
-      {/* Service Centers Grid */}
       <div className="row g-4">
         {serviceCenters.length === 0 ? (
           <div className="col-12">
@@ -131,32 +141,31 @@ const ServiceCenters = () => {
                     <i className="fas fa-city me-2"></i>
                     {center.city}
                   </p>
-                  <p className="card-text text-muted small mb-1">
+                  <p className="card-text text-white small mb-2">
                     <i className="fas fa-phone me-2"></i>
                     {center.phoneNumber}
                   </p>
                   {center.workingHours && (
-                    <p className="card-text text-muted small mb-1">
+                    <p className="card-text text-white small mb-2">
                       <i className="fas fa-clock me-2"></i>
                       {center.workingHours}
                     </p>
                   )}
                   {center.servicesCount !== undefined && (
-                    <p className="card-text text-muted small mb-1">
+                    <p className="card-text text-white small mb-2">
                       <i className="fas fa-wrench me-2"></i>
                       {center.servicesCount} services available
                     </p>
                   )}
                   {center.distance != null && (
-                    <p className="card-text text-muted small mb-1">
+                    <p className="card-text text-white small mb-2">
                       <i className="fas fa-route me-2"></i>
                       {center.distance.toFixed(1)} km away
                     </p>
                   )}
                   <Link
                     to={`/service-centers/${center.id}`}
-                    className="btn btn-primary btn-sm mt-3"
-                  >
+                    className="btn search-button btn-sm mt-3">
                     View Services &amp; Book
                   </Link>
                 </div>
@@ -169,24 +178,22 @@ const ServiceCenters = () => {
       {pagination && (
         <div className="d-flex justify-content-between align-items-center mt-4">
           <span className="text-muted">
-            Page {pagination.pageNumber} of {pagination.totalPages} ({pagination.totalCount}{' '}
-            centers)
+            Page {pagination.pageNumber} of {pagination.totalPages} (
+            {pagination.totalCount} centers)
           </span>
           <div>
             <button
               type="button"
               className="btn btn-outline-secondary btn-sm me-2"
               onClick={() => handlePageChange(pagination.pageNumber - 1)}
-              disabled={!pagination.hasPreviousPage}
-            >
+              disabled={!pagination.hasPreviousPage}>
               Previous
             </button>
             <button
               type="button"
               className="btn btn-outline-secondary btn-sm"
               onClick={() => handlePageChange(pagination.pageNumber + 1)}
-              disabled={!pagination.hasNextPage}
-            >
+              disabled={!pagination.hasNextPage}>
               Next
             </button>
           </div>

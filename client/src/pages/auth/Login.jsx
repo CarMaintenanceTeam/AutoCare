@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import './Auth.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import "./Auth.css";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -18,24 +18,24 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const result = await login(formData.email, formData.password);
-      
+
       if (result.success) {
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
         setError(result.message);
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ const Login = () => {
             <div className="auth-card card shadow-lg">
               <div className="card-body p-5">
                 <div className="text-center mb-4">
-                  <h2 className="fw-bold">Welcome Back</h2>
+                  <h2 className="fw-bold all-services">Welcome Back</h2>
                   <p className="text-muted">Sign in to your account</p>
                 </div>
 
@@ -96,22 +96,24 @@ const Login = () => {
                   <button
                     type="submit"
                     className="btn btn-primary w-100 mb-3"
-                    disabled={loading}
-                  >
+                    disabled={loading}>
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"></span>
                         Signing in...
                       </>
                     ) : (
-                      'Sign In'
+                      "Sign In"
                     )}
                   </button>
 
                   <div className="text-center">
                     <p className="mb-0">
-                      Don't have an account?{' '}
-                      <Link to="/register" className="text-primary fw-bold">
+                      Don't have an account?{" "}
+                      <Link to="/register" className="text-warning fw-bold">
                         Sign Up
                       </Link>
                     </p>
@@ -123,7 +125,8 @@ const Login = () => {
                 <div className="text-center">
                   <p className="text-muted small mb-2">Demo Accounts:</p>
                   <p className="small mb-0">
-                    <strong>Customer:</strong> ahmed.mohamed@gmail.com / Password123@
+                    <strong>Customer:</strong> ahmed.mohamed@gmail.com /
+                    Password123@
                   </p>
                   <p className="small mb-0">
                     <strong>Admin:</strong> admin@autocare.com / Password123@
